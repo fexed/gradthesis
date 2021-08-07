@@ -31,19 +31,69 @@
     month={Aug}
 } 
 
-@article{DBLP:journals/corr/LiH16e,
-  author    = {Zhizhong Li and
-               Derek Hoiem},
-  title     = {Learning without Forgetting},
-  journal   = {CoRR},
-  volume    = {abs/1606.09282},
-  year      = {2016},
-  url       = {http://arxiv.org/abs/1606.09282},
-  archivePrefix = {arXiv},
-  eprint    = {1606.09282},
-  timestamp = {Thu, 31 Dec 2020 11:34:47 +0100},
-  biburl    = {https://dblp.org/rec/journals/corr/LiH16e.bib},
-  bibsource = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{10.1145/3242969.3242985,
+author = {Schmidt, Philip and Reiss, Attila and Duerichen, Robert and Marberger, Claus and Van Laerhoven, Kristof},
+title = {Introducing WESAD, a Multimodal Dataset for Wearable Stress and Affect Detection},
+year = {2018},
+isbn = {9781450356923},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3242969.3242985},
+doi = {10.1145/3242969.3242985},
+abstract = {Affect recognition aims to detect a person's affective state based on observables,
+with the goal to e.g. improve human-computer interaction. Long-term stress is known
+to have severe implications on wellbeing, which call for continuous and automated
+stress monitoring systems. However, the affective computing community lacks commonly
+used standard datasets for wearable stress detection which a) provide multimodal high-quality
+data, and b) include multiple affective states. Therefore, we introduce WESAD, a new
+publicly available dataset for wearable stress and affect detection. This multimodal
+dataset features physiological and motion data, recorded from both a wrist- and a
+chest-worn device, of 15 subjects during a lab study. The following sensor modalities
+are included: blood volume pulse, electrocardiogram, electrodermal activity, electromyogram,
+respiration, body temperature, and three-axis acceleration. Moreover, the dataset
+bridges the gap between previous lab studies on stress and emotions, by containing
+three different affective states (neutral, stress, amusement). In addition, self-reports
+of the subjects, which were obtained using several established questionnaires, are
+contained in the dataset. Furthermore, a benchmark is created on the dataset, using
+well-known features and standard machine learning methods. Considering the three-class
+classification problem ( baseline vs. stress vs. amusement ), we achieved classification
+accuracies of up to 80%,. In the binary case ( stress vs. non-stress ), accuracies
+of up to 93%, were reached. Finally, we provide a detailed analysis and comparison
+of the two device locations ( chest vs. wrist ) as well as the different sensor modalities.},
+booktitle = {Proceedings of the 20th ACM International Conference on Multimodal Interaction},
+pages = {400–408},
+numpages = {9},
+keywords = {multimodal dataset, sensor fusion, benchmark, user study, emotion recognition, affective computing, stress detection},
+location = {Boulder, CO, USA},
+series = {ICMI '18}
+}
+
+@ARTICLE{7736040,
+  author={Subramanian, Ramanathan and Wache, Julia and Abadi, Mojtaba Khomami and Vieriu, Radu L. and Winkler, Stefan and Sebe, Nicu},
+  journal={IEEE Transactions on Affective Computing}, 
+  title={ASCERTAIN: Emotion and Personality Recognition Using Commercial Sensors}, 
+  year={2018},
+  volume={9},
+  number={2},
+  pages={147-160},
+  doi={10.1109/TAFFC.2016.2625250}}
+
+@misc{li2017learning,
+      title={Learning without Forgetting}, 
+      author={Zhizhong Li and Derek Hoiem},
+      year={2017},
+      eprint={1606.09282},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+
+@misc{kirkpatrick2017overcoming,
+      title={Overcoming catastrophic forgetting in neural networks}, 
+      author={James Kirkpatrick and Razvan Pascanu and Neil Rabinowitz and Joel Veness and Guillaume Desjardins and Andrei A. Rusu and Kieran Milan and John Quan and Tiago Ramalho and Agnieszka Grabska-Barwinska and Demis Hassabis and Claudia Clopath and Dharshan Kumaran and Raia Hadsell},
+      year={2017},
+      eprint={1612.00796},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
 }
 
 @article{DBLP:journals/corr/Lopez-PazR17,
@@ -150,4 +200,100 @@ Connectionist networks in which information is stored in weights on connections 
     url  = "http://agilemanifesto.org/",
     addendum = "(accessed: 06.08.2021)",
     keywords = "project"
+}
+
+@misc{lopezpaz2017gradient,
+      title={Gradient Episodic Memory for Continual Learning}, 
+      author={David Lopez-Paz and Marc'Aurelio Ranzato},
+      year={2017},
+      eprint={1706.08840},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@misc{vandeven2019scenarios,
+      title={Three scenarios for continual learning}, 
+      author={Gido M. van de Ven and Andreas S. Tolias},
+      year={2019},
+      eprint={1904.07734},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@misc{vandeven2019generative,
+      title={Generative replay with feedback connections as a general strategy for continual learning}, 
+      author={Gido M. van de Ven and Andreas S. Tolias},
+      year={2019},
+      eprint={1809.10635},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@misc{rolnick2019experience,
+      title={Experience Replay for Continual Learning}, 
+      author={David Rolnick and Arun Ahuja and Jonathan Schwarz and Timothy P. Lillicrap and Greg Wayne},
+      year={2019},
+      eprint={1811.11682},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@article{Carranza_Garc_a_2021,
+   title={Enhancing object detection for autonomous driving by optimizing anchor generation and addressing class imbalance},
+   volume={449},
+   ISSN={0925-2312},
+   url={http://dx.doi.org/10.1016/j.neucom.2021.04.001},
+   DOI={10.1016/j.neucom.2021.04.001},
+   journal={Neurocomputing},
+   publisher={Elsevier BV},
+   author={Carranza-García, Manuel and Lara-Benítez, Pedro and García-Gutiérrez, Jorge and Riquelme, José C.},
+   year={2021},
+   month={Aug},
+   pages={229–244}
+}
+
+@misc{huang2020autonomous,
+      title={Autonomous Driving with Deep Learning: A Survey of State-of-Art Technologies}, 
+      author={Yu Huang and Yue Chen},
+      year={2020},
+      eprint={2006.06091},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+
+@INPROCEEDINGS{6856582,
+  author={Wei, Junqing and Snider, Jarrod M. and Gu, Tianyu and Dolan, John M. and Litkouhi, Bakhtiar},
+  booktitle={2014 IEEE Intelligent Vehicles Symposium Proceedings}, 
+  title={A behavioral planning framework for autonomous driving}, 
+  year={2014},
+  volume={},
+  number={},
+  pages={458-464},
+  doi={10.1109/IVS.2014.6856582}}
+  
+@misc{abadi2016tensorflow,
+      title={TensorFlow: A system for large-scale machine learning}, 
+      author={Martín Abadi and Paul Barham and Jianmin Chen and Zhifeng Chen and Andy Davis and Jeffrey Dean and Matthieu Devin and Sanjay Ghemawat and Geoffrey Irving and Michael Isard and Manjunath Kudlur and Josh Levenberg and Rajat Monga and Sherry Moore and Derek G. Murray and Benoit Steiner and Paul Tucker and Vijay Vasudevan and Pete Warden and Martin Wicke and Yuan Yu and Xiaoqiang Zheng},
+      year={2016},
+      eprint={1605.08695},
+      archivePrefix={arXiv},
+      primaryClass={cs.DC}
+}
+
+@book{geron,
+    title = {Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow, 2nd Edition},
+    author = {Aurélien Géron},
+    isbn = {9781492032649},
+    year = {2019},
+    publisher = {O'Reilly Media, Inc.},
+    keywords = {machinelearning, tensorflow, python}
+}
+
+@book{chollet,
+    title = {Deep Learning with Python},
+    author = {François Chollet},
+    isbn = {9781617294433},
+    year = {2017},
+    publisher = {Manning Publications},
+    keywords = {machinelearning, python}
 }
