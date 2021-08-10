@@ -1,0 +1,95 @@
+\chapter{Approcci}
+In questa sezione verranno delineati nei dettagli i vari approcci scelti per la realizzazione della comparazione fra alcune strategie di continual learning triviali applicate ai dataset di Human State Monitoring presentati nel precedente capitolo.
+
+\section{Metriche}
+Per poter confrontare fra loro le diverse strategie, fin da subito è apparsa chiara la necessità di metriche che misurassero precisamente alcune caratteristiche fondamentali degli approccio di continual learning: in particolare, l'accuratezza sul test set, l'accuratezza media sulle classi e i \textit{forward} e \textit{backward transfer} per poter misurare l'impatto della nuova conoscenza sulla precedente e su quella da acquisire.
+\subsection{Accuratezza}
+Con "accuratezza" si intende la misura della percentuale di previsioni corrette che modello di machine learning ottiene su un test set, cioè un insieme di dati a cui il modello non è ancora stato esposto.\\
+Per poter misurare l'accuratezza su un insieme di dati, l'API di TensorFlow mette a disposizione un comando che valuta un modello di machine learning applicato ai dati passati come parametro:
+\begin{lstlisting}[style = myPython]
+model.evaluate(Xtest, ytest)
+\end{lstlisting}
+Questa chiamata ritorna il valore assunto dalla funzione di loss al termine della valutazione e le metriche che vengono specificate durante la compilazione del modello. Compilando il modello con il seguente comando
+\begin{lstlisting}[style = myPython]
+model.compile(loss = 'categorical_crossentropy', optimizer = opt, metrics = ['accuracy'])
+\end{lstlisting}
+otterremo un modello la cui funzione di loss è la cross-entropia categorica, usata per modelli che devono classificare dati appartenenti ad una sola classe fra diverse disponibili, e come metrica aggiuntiva richiediamo l'accuratezza. Così facendo, con
+\begin{lstlisting}[style = myPython]
+model.evaluate(Xtest, ytest)[1]
+\end{lstlisting}
+otteniamo la misura dell'accuratezza che il modello \texttt{model} ottiene sul test set composto dai dati \texttt{Xtest} e dalle label \texttt{ytest}.
+\subsection{ACC, FWT e BWT}
+Queste tre metriche sono state tratte e adattate dalla pubblicazione \textit{Gradient Episodic Memory for Continual Learning}$^{\cite{DBLP:journals/corr/Lopez-PazR17}}$, e si basano sulla costruzione di una matrice $R \in \mathbb{R}^{E\times T}$. Con $T$ si indica il numero di classi del problema in esame, e ogni volta che il modello finisce una sessione di addestramento tra le $E$ si va a valutare la sua \textit{test performance} su tutte le $T$ classi. Così facendo, su calcolano gli $R_{i,j}\in R$ valutazioni dell'accuratezza del test di classificazione del modello sulla classe $t_j$ dopo aver osservato gli esempi della $i$-esima sessione di addestramento. Inoltre, una volta creato il modello con una inizializzazione dei pesi casuale si calcola $\overline{b}$, valutazione delle accuratezza nei test sui vari task.\\
+Possiamo ora definire le tre metriche:
+\begin{itemize}
+    \item[-] \textbf{ACC}, \textit{Average Accuracy} o accuratezza media
+        \begin{equation}\label{eq:fun_acc}
+            ACC = \frac{1}{T}\cdot\sum_{i=1}^T R_{E,i}
+        \end{equation}
+    Va a misurare l'accuratezza media del modello su tutti le $T$ classi a fine addestramento
+    \item[-] \textbf{BWT}, \textit{Backward Transfer} o trasferimento all'indietro
+        \begin{equation}\label{eq:fun_bwt}
+            BWT = \frac{1}{T-1}\cdot\sum_{i=1}^T\left(\frac{1}{E}\sum_{j=1}^E R_{E,i} - R_{j,i}\right)
+        \end{equation}
+    Valuta l'influenza che ha una sessione di apprendimento sulle precedenti, valutando l'impatto che ha avuto sulle valutazioni dell'accuratezza in fase di test. Si ha un BWT positivo quando una sessione di addestramento migliora l'accuratezza delle precedenti già valutate, mentre un valore negativo indica che la sessione di addestramento ha deteriorato l'accuratezza che si otteneva grazie alla precedente conoscenza. Non è significativo parlare di BWT durante la prima sessione di addestramento.\\
+    Un BWT fortemente negativo si ha nello scenario del \textit{catastrophic forgetting}.
+    \pagebreak
+    \item[-] \textbf{FWT}, \textit{Forward Transfer} o trasferimento in avanti
+        \begin{equation}\label{eq:fun_fwt}
+            FWT = \frac{1}{T-1}\cdot\sum_{i=1}^T\left(\frac{1}{E}\sum_{j=1}^E R_{j,i} - \overline{b}_i\right)
+        \end{equation}
+    Serve per misurare l'influenza che la sessione di apprendimento ha sulla conoscenza ancora da apprendere. In particolare, un FWT positivo è possibile quando il modello è in grado di realizzare lo \textit{zero-shot} learning, cioè di apprendere informazioni sui task futuri senza essere esposto ad esempi da apprendere, per esempio sfruttando la struttura interna della conoscenza in caso di task simili.\\
+    Non è significativo parlare di FWT durante l'ultima sessione di addestramento.
+\end{itemize}
+Tra queste tre, quella senza dubbio più interessante ai fini dell'esperimento è il BWT. Diventa particolarmente importante evitare gli scenari che portano al \textit{catastrophic forgetting}: nel nostro caso, uno scenario simile porterebbe a dimenticare esempi di HSM passati e a far sì che il modello si basi solamente sull'esperienza recente, rischiando di dimenticare importanti esempi passati di stati d'animo e di conseguenza a non saper più riconoscerli correttamente.\\\\
+Più grandi sono queste metriche, migliore è il comportamento del modello in esame. A parità di ACC, si preferisce il modello con maggior BWT e FWT che denoterebbe un miglior trasferimento della conoscenza attraverso i task e le sessioni di training.
+\subsection{Altre metriche}
+Le altre metriche raccolte durante gli esperimenti sono le seguenti:
+\begin{itemize}
+    \item[-] \textbf{Numero di epoche} medio, e deviazione standard\\
+    Questa misurazione fornisce una indicazione sul tempo di convergenza delle reti neurali selezionate sui dati, così da poter stimare le loro prestazioni su hardware diversi da quello di test.
+    \item[-] \textbf{Tempo di addestramento} medio, e deviazione standard\\
+    Gli esperimenti sono eseguiti su un comune computer casalingo, sfruttando le ottimizzazioni messe a disposizione dall'utilizzo di una GPU per i calcoli. Nello specifico, le computazioni sono state eseguite su una macchina che montava una GPU nVidia GeForce GTX 1070.\\% CUDA 10.1 https://ai-benchmark.com/ranking_deeplearning.html
+    Il tempo di addestramento è calcolato come la media dei tempi impiegati delle varie sessioni di addestramento.
+    \item[-] \textbf{Quantità di memoria} media\\
+    Metrica utile per valutare l'impatto sulla memoria del sistema che andrà poi a utilizzare il modello addestrato. Un elevato consumo di memoria può portare alla esclusione di dispositivi portatili o con specifiche particolari.
+\end{itemize}
+
+\section{Baseline: l'approccio offline}
+Un classico addestramento di un modello di machine learning avviene raccogliendo i dati di training e sottoponendoli al modello tutti in una volta. Questo approccio è statico e produce un modello che sui futuri dati si comporterà tanto meglio quanto essi saranno simili ai dati di addestramento.\\
+La scelta di usare questo approccio classico come baseline è stata guidata dal principio che, avendo tutti i dati a disposizione in una sola volta, la rete neurale risultante dovrebbe avere le migliori prestazioni possibili sul test set una volta che viene sottoposto, e quindi fornisce un "limite superiore" all'accuratezza degli approcci continual. Una strategia di continual learning è tanto migliore quanto più si avvicina alle performance che la stessa rete neurale avrebbe se addestrata su tutti i dati in maniera offline.\\\\
+L'approccio offline quindi avviene seguendo il seguente pseudo-algoritmo, applicabile sia a WESAD che ad ASCERTAIN:
+\begin{enumerate}
+    \item \textbf{Creare e compilare la rete neurale} che verrà poi addestrata.\\
+    La creazione della rete neurale, attraverso la API Sequential di TensorFlow, è analoga per entrambi i dataset a meno della struttura interna. L'esempio seguente è tratto dall'addestramento offline per WESAD, e costruisce una rete neurale con due layer da 18 unità GRU e un layer output da 4 unità, corrispondenti alle 4 classi del dataset.
+    \lstinputlisting[style=myPython, firstnumber=22, firstline=22, lastline=30]{code/wesad_totaltrain.py}
+    \item \textbf{Caricare il dataset}, composto da training set e test set.\\
+    Come precedentemente spiegato, i dataset sono divisi in training set e test set, e il training set è ulteriormente diviso fra i soggetti dei due studi. In entrambi i casi quindi, per quanto riguarda l'approccio offline, viene caricato il test set così com'è, mentre il training set è caricato concantenando fra loro i dati di tutti i soggetti. Esempio, sempre tratto da WESAD:
+    \lstinputlisting[style=myPython, firstnumber=35, firstline=35, lastline=47]{code/wesad_totaltrain.py}
+    \lstinputlisting[style=myPython, firstnumber=51, firstline=51, lastline=52]{code/wesad_totaltrain.py}
+    Il training set è ulteriormente diviso in training set e validation set, utile per verificare l'andamento dell'addestramento e implementare la fermata anticipata dell'addestramento:
+    \lstinputlisting[style=myPython, firstnumber=56, firstline=56, lastline=56]{code/wesad_totaltrain.py}
+    \item \textbf{Addestramento} e risultati.\\
+    Una volta preparato il dataset, si può dare il via all'addestramento. Prima di esso si preparano, sempre grazie all'API di TensorFlow, le due callback usate durante gli esperimenti: la creazione di grafici attraverso TensorBoard e la fermata anticipata in base all'andamento del valore della funzione di loss sul validation set:
+    \lstinputlisting[style=myPython, firstnumber=59, firstline=59, lastline=68]{code/wesad_totaltrain.py}
+    I risultati sono poi proiettati in output sul terminale:
+    \lstinputlisting[style=myPython, firstnumber=70, firstline=70, lastline=73]{code/wesad_totaltrain.py}
+\end{enumerate}
+L'approccio offline, come visto, è immediato e grazie alle API di TensorFlow anche semplice da implementare. Esso è stato utilizzato per poter selezionare la rete neurale usata per il dataset relativo, una per WESAD e una per ASCERTAIN, su ciascun esperimento, in base all'accuratezza finale raggiunta.
+
+\section{Approcci continual}
+% Approcci continual
+% Dettagli sugli approcci di continual learning adottati per gli esperimenti
+% Spiegare nel dettaglio la differenza fra offline e approcci continual, quale sarebbe la situazione ideale (a fine soggetti in continual dovrei avere la stessa accuracy dell'approccio offline) e quale la realtà allo stato dell'arte
+% parlare nel dettaglio delle tecniche di continual learning utilizzate, in particolare di LWF e EWC che non sono basate sul semplice replay, facendo riferimento ai paper relativi
+
+\section{Esperimenti}
+\subsection{Overview}  % approcci comuni ai diversi esperimenti: callback, struttura dei dati, parametri del modello...
+% Esperimenti
+% Magari racconto velocemente i diversi approcci e difficoltà errori riscontrati?
+% Raccontare e delineare bene, tramite codice e grafici, esperimenti eseguiti con dettagli
+% dovrei parlare di tutti i tentativi ed esperimenti da giugno a ora o solamente degli approcci "finali" adottati?
+% inizialmente: studio su come realizzare le reti neurali, esperimenti personali per familiarizzare con API
+% poi inizio studio su come affrontare il training...
+
+% --> capitolo successivo, Risultati
