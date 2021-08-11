@@ -19,7 +19,7 @@ model.evaluate(Xtest, ytest)[1]
 \end{lstlisting}
 otteniamo la misura dell'accuratezza che il modello \texttt{model} ottiene sul test set composto dai dati \texttt{Xtest} e dalle label \texttt{ytest}.
 \subsection{ACC, FWT e BWT}
-Queste tre metriche sono state tratte e adattate dalla pubblicazione \textit{Gradient Episodic Memory for Continual Learning}$^{\cite{DBLP:journals/corr/Lopez-PazR17}}$, e si basano sulla costruzione di una matrice $R \in \mathbb{R}^{E\times T}$. Con $T$ si indica il numero di classi del problema in esame, e ogni volta che il modello finisce una sessione di addestramento tra le $E$ si va a valutare la sua \textit{test performance} su tutte le $T$ classi. Così facendo, su calcolano gli $R_{i,j}\in R$ valutazioni dell'accuratezza del test di classificazione del modello sulla classe $t_j$ dopo aver osservato gli esempi della $i$-esima sessione di addestramento. Inoltre, una volta creato il modello con una inizializzazione dei pesi casuale si calcola $\overline{b}$, valutazione delle accuratezza nei test sui vari task.\\
+Queste tre metriche sono state tratte e adattate dalla pubblicazione \textit{Gradient Episodic Memory for Continual Learning}$^{\cite{DBLP:journals/corr/Lopez-PazR17}}$, e si basano sulla costruzione di una matrice $R \in \mathbb{R}^{E\times T}$. Con $T$ si indica il numero di classi del problema in esame, e ogni volta che il modello finisce una sessione di addestramento tra le $E$ che vengono eseguite si va a valutare la sua \textit{test performance} su tutte le $T$ classi. Così facendo, su calcolano le $R_{i,j}\in R$ valutazioni dell'accuratezza del test di classificazione del modello sulla classe $t_j$ dopo aver osservato gli esempi della $i$-esima sessione di addestramento. Inoltre, una volta creato il modello con una inizializzazione dei pesi casuale si calcola $\overline{b}$, valutazione delle accuratezza nei test sui vari task.\\
 Possiamo ora definire le tre metriche:
 \begin{itemize}
     \item[-] \textbf{ACC}, \textit{Average Accuracy} o accuratezza media
@@ -78,10 +78,163 @@ L'approccio offline quindi avviene seguendo il seguente pseudo-algoritmo, applic
 L'approccio offline, come visto, è immediato e grazie alle API di TensorFlow anche semplice da implementare. Esso è stato utilizzato per poter selezionare la rete neurale usata per il dataset relativo, una per WESAD e una per ASCERTAIN, su ciascun esperimento, in base all'accuratezza finale raggiunta.
 
 \section{Approcci continual}
+Al centro di questo progetto ci sono gli approcci di continual learning. Ne sono stati selezionati alcuni: 3 tecniche di replay e 2 tecniche che non sfruttano esempi già visti.\\\\
+Per realizzare il flusso di dati necessario a implementare una strategia di continual learning, le quali richiedono che i dati di addestramento non siano subito tutti disponibili ma che lo diventino nel tempo, i soggetti di entrambi i dataset sono stati divisi a coppie e sottoposti all'addestramento della rete neurale una coppia per volta. Le tabelle \ref{tab:coppiewesad} e \ref{tab:coppieascertain} mostrano la suddivisione a coppie rispettivamente per il dataset WESAD e il dataset ASCERTAIN.
+\begin{table}[h]
+    \parbox{.45\linewidth}{
+    	\begin{center}
+    		\begin{tabular}{l|c}
+    		     \textbf{Sessione} & \textbf{Coppie}\\
+    		     \hline
+    		     1 & S2, S3 \\
+    		     2 & S4, S5 \\
+    		     3 & S6, S7 \\
+    		     4 & S8, S9 \\
+    		     5 & S10, S11 \\
+    		     6 & S13, S14 \\
+    		     7 & S15, S16 \\
+    		     \hline
+    		     $E$ & 7
+    		\end{tabular}
+    		\caption{Suddivisione a coppie del dataset WESAD}
+    		\label{tab:coppiewesad}
+    	\end{center}
+	}
+    \parbox{.45\linewidth}{
+    	\begin{center}
+    		\begin{tabular}{l|c}
+    		     \textbf{Sessione} & \textbf{Coppie}\\
+    		     \hline
+    		     1 & S0, S1 \\
+    		     2 & S2, S3 \\
+    		     3 & S4, S5 \\
+    		     4 & S6, S7 \\
+    		     5 & S8, S9 \\
+    		     6 & S10, S11 \\
+    		     7 & S12, S13 \\
+    		     8 & S14, S15 \\
+    		     \hline
+    		     $E$ & 8
+    		\end{tabular}
+    		\caption{Suddivisione a coppie del dataset ASCERTAIN}
+    		\label{tab:coppieascertain}
+    	\end{center}
+    }
+\end{table}
+
+Per poter misurare le metriche ACC, BWT e FWT degli approcci di continual learning, in ogni esperimento viene prima preparato il test set suddividendolo nelle varie classi:
+\lstinputlisting[style=myPython, firstnumber=21, firstline=21, lastline=22]{code/wesad_continualtrain.py}
+\lstinputlisting[style=myPython, firstnumber=24, firstline=24, lastline=44]{code/wesad_continualtrain.py}
+Subito dopo, appena viene creato il modello, vengono inizializzate le variabili necessarie e il vettore $\overline{b}$:
+\lstinputlisting[style=myPython, firstnumber=57, firstline=57, lastline=64]{code/wesad_continualtrain.py}
+Al termine di ogni sessione di training, cioè appena concluso l'addestramento su una coppia, vengono calcolati gli $R_{i,j}$:
+\lstinputlisting[style=myPython, firstnumber=97, firstline=97, lastline=97]{code/wesad_continualtrain.py}
+Infine, al termine del processo di addestramento, vengono calcolate le varie metriche:
+\lstinputlisting[style=myPython, firstnumber=99, firstline=99, lastline=118]{code/wesad_continualtrain.py}
 % Approcci continual
 % Dettagli sugli approcci di continual learning adottati per gli esperimenti
 % Spiegare nel dettaglio la differenza fra offline e approcci continual, quale sarebbe la situazione ideale (a fine soggetti in continual dovrei avere la stessa accuracy dell'approccio offline) e quale la realtà allo stato dell'arte
 % parlare nel dettaglio delle tecniche di continual learning utilizzate, in particolare di LWF e EWC che non sono basate sul semplice replay, facendo riferimento ai paper relativi
+
+\subsection{Continual}
+Il primo approccio continual sperimentato è stato definito semplicemente \textit{continual learning}. Questo approccio consiste nel fornire al modello una coppia alla volta come training set, senza ulteriori meccanismi.\\\\
+Nel dettaglio, inizialmente vengono subito stabilite le coppie:
+\lstinputlisting[style=myPython, firstnumber=66, firstline=66, lastline=66]{code/wesad_continualtrain.py}
+Ogni coppia è caricata, concatenata, per formare il training set della sessione che viene poi diviso il training set e validation set:
+\lstinputlisting[style=myPython, firstnumber=68, firstline=68, lastline=71]{code/wesad_continualtrain.py}
+\lstinputlisting[style=myPython, firstnumber=73, firstline=73, lastline=74]{code/wesad_continualtrain.py}
+\lstinputlisting[style=myPython, firstnumber=83, firstline=83, lastline=83]{code/wesad_continualtrain.py}
+Infine il modello è addestrato sul training set e validato sul validation set appena prodotti, sono calcolate le metriche e proiettate in output.
+\subsection{Replay}  % una percentuale, di solito 25%
+Questa è la prima tecnica di replay provata. Consiste nel tenere una percentuale del training set attuale e usarla insieme al training set, cioè alla coppia, della sessione di addestramento successiva. Il procedimento è simile all'approccio continual learning precedente.\\\\
+Subito prima di avviare l'addestramento, vengono inizializzate le due variabili che conterranno il training set:
+\lstinputlisting[style=myPython, firstnumber=65, firstline=65, lastline=65]{code/wesad_continualreplaytrain.py}
+Appena caricati i soggetti, viene costruito il training set anche mantenendo ciò che è stato trattenuto dalla sessione precedente, se presente:
+\lstinputlisting[style=myPython, firstnumber=74, firstline=74, lastline=79]{code/wesad_continualreplaytrain.py}
+A fine sessione di addestramento, si trattiene la percentuale di replay (nell'esempio, il 25\%):
+\lstinputlisting[style=myPython, firstnumber=100, firstline=100, lastline=100]{code/wesad_continualreplaytrain.py}
+
+\subsection{Cumulative}  % si mantengono gli esempi precedenti nei successivi addestramenti, così all'arrivo dell'ultima coppia di soggetti il training set è uguale al caso offline
+Con questo approccio, si intende mantenere di volta in volta l'intero training set. Così facendo, con l'ultima coppia di soggetti si avrà un training set pari all'approccio offline, contenendo tutti i dati di tutti i precedenti soggetti, con cui addestrare la rete neurale già addestrata.\\\\
+Viene realizzato semplicemente concatenando la coppia di soggetti al training set già presente, se presente.
+\subsection{Episodic}  % si mantengono di volta in volta m esempi per ogni classe tratti dal training set
+Nelle precedenti tecniche di replay si mantengono tutti i dati o un sottoinsieme scelto casualmente del training set. Con questa tecnica, invece, viene mantenuto di sessione in sessione un numero di esempi per ogni etichetta, così da avere un replay bilanciato rispetto alle classi.\\\\
+Subito prima di avviare l'addestramento, vengono inizializzate le "memorie episodiche" e il parametro $m$, che indica quanti esempi per classe mantenere (nell'esempio, $m = 70$):
+\lstinputlisting[style=myPython, firstnumber=68, firstline=68, lastline=69]{code/wesad_episodic.py}
+Al termine di una sessione di addestramento, il training set appena usato è suddiviso per classi:
+\lstinputlisting[style=myPython, firstnumber=105, firstline=105, lastline=108]{code/wesad_episodic.py}
+\lstinputlisting[style=myPython, firstnumber=112, firstline=112, lastline=115]{code/wesad_episodic.py}
+\lstinputlisting[style=myPython, firstnumber=119, firstline=119, lastline=122]{code/wesad_episodic.py}
+\lstinputlisting[style=myPython, firstnumber=126, firstline=126, lastline=129]{code/wesad_episodic.py}
+Ogni sottoinsieme è mescolato, per evitare di mantenere sempre i soliti esempi, e da ognuno ne vengono presi $m$:
+\lstinputlisting[style=myPython, firstnumber=109, firstline=109, lastline=111]{code/wesad_episodic.py}
+\lstinputlisting[style=myPython, firstnumber=116, firstline=116, lastline=118]{code/wesad_episodic.py}
+\lstinputlisting[style=myPython, firstnumber=123, firstline=123, lastline=125]{code/wesad_episodic.py}
+\lstinputlisting[style=myPython, firstnumber=130, firstline=130, lastline=132]{code/wesad_episodic.py}
+Infine, viene formato il training set che andrà a concatenarsi alla coppia di soggetti successiva:
+\lstinputlisting[style=myPython, firstnumber=134, firstline=134, lastline=135]{code/wesad_episodic.py}
+
+\subsection{Elastic Weight Consolidation}
+Questo approccio di continual learning, introdotto nella pubblicazione \textit{Overcoming catastrophic forgetting in neural networks}$^{\cite{kirkpatrick2017overcoming}}$, si basa sul principio che non tutti i parametri di una rete neurale sono importanti ai fini dell'apprendimento di un determinato task. Dato un modello con parametri $\Theta$ e un dataset $D$, si può formalizzare il problema dell'apprendimento come la ricerca della parametrizzazione $\Theta$ dato il dataset $D$ che massimizza $p(\Theta\:|\:D)$. Seguendo il Teorema di Bayes
+\begin{equation}\label{eq:ewc_bayes}
+    p(\Theta\:|\:D) = \frac{p(D\:|\:\Theta)\cdot p(\Theta)}{p(D)}
+\end{equation}
+che può essere trasformata in 
+\begin{equation}\label{eq:ewc_bayes2}
+    \log p(\Theta\:|\:D) = \log p(D\:|\:\Theta) + \log p(\Theta) - \log p(D)
+\end{equation}
+Assumendo che il dataset sia diviso in due parti, $D_A$ e $D_B$, poiché l'obiettivo è apprendere $p(\Theta\:|\:D)$ con la suddivisione diventa apprendere prima $p(\Theta\:|\:D_A)$ e successivamente $p(\Theta\:|\:D_B)$. Algebricamente, l'obiettivo è
+\begin{equation}\label{eq:ewc2}
+    p(\Theta\:|\:D) = p(p(\Theta\:|\:D_A)\:|\:D_b) = \frac{p(D_B\:|\:p(\Theta\:|\:D_A))\cdot p(\Theta\:|\:D_A)}{p(D_B)}
+\end{equation}
+che, analogamente a \ref{eq:ewc_bayes}, può essere trasformata in
+\begin{equation}\label{eq:ewc3}
+    \log p(\Theta\:|\:D) = \log p(D_B\:|\:\Theta) + \log p(\Theta\:|\:D_A) - \log p(D_B)
+\end{equation}
+Si può dedurre come tutta la conoscenza relativa al task $A$ viene assorbita dal termine $p(\theta\:|\: D_A)$, cioè esso indica quali parametri sono importanti per il task $A$. Con $p(\theta\:|\: D_A)$ si può quindi calcolare una matrice $F_i$, chiamata Matrice dell'Informazione di Fisher, per ogni parametro $\Theta_i \in \Theta$ rispetto a $D_A$: questa matrice stima l'importanza del parametro $\Theta_i$ per quanto riguarda il task descritto dai dati $D_A$. Questa informazione può essere usata come "penalità elastica", e nella pubblicazione viene fatta l'analogia ad un elastico che trattiene il valore di $\Theta_i$ dal distanziarsi troppo dalla precedente soluzione, in modo proporzionale a $F_i$. La penalità elastica, cioè il termine di regolarizzazione, è\begin{equation}\label{eq:ewc_penalty}
+    \Omega(\Theta) = \sum_i \frac{1}{2} F_i\left(\Theta_i - \Theta_{A,i}^*\right)^2
+\end{equation}
+che rappresenta l'elasticità con cui ogni parametro $\Theta_i \in \Theta$ viene mantenuto vicino a $\Theta_{A,i}^*\in\Theta_A^*$. Si aggiunge anche un ulteriore parametro, $\lambda$ che descrive l'importanza del termine di regolarizzazione.\\\\
+Con queste informazioni, la loss che viene minimizzata nell'approccio EWC è
+\begin{equation}\label{eq:ewc_loss}
+    loss(\Theta) = loss_B(\Theta) + \sum_i \frac{\lambda}{2} F_i\left(\Theta_i - \Theta_{A,i}^*\right)^2
+\end{equation}
+dove $loss_B(\Theta)$ è la loss calcolata solamente sul task $B$, $\lambda$ è un parametro che indica l'importanza dei vecchi task rispetto ai nuovi e $i$ etichetta ogni parametro. La matrice $F$ è approssimata come la media dei gradienti delle $\log$-verosomiglianze di $N$ esempi presi da $D_A$ al quadrato:
+\begin{equation}\label{eq:ewc_F}
+    F = \frac{1}{N}\sum_{i=1}^N \nabla_\Theta \log p(x_{A,i}\:|\:\Theta_A^*)\:\nabla_\Theta \log p(x_{A_i}\:|\:\Theta_A^*)^T
+\end{equation}
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{img/ewc.png}
+		\caption{Schematizzazione del comportamento di EWC}
+		\label{fig:ewc}
+	\end{center}
+\end{figure}
+% TODO: dettagli implementativi?
+% Implementazione: \cite{moriarty_ewc}
+\subsection{Learning Without Forgetting}
+L'approccio Learning Without Forgetting, delineato nell'omonima pubblicazione$^{\cite{li2017learning}}$, sfrutta esclusivamente i nuovi dati per addestrare il modello mantenendo la conoscenza già appresa.\\
+Questo metodo parte da una rete che possiede parametri $\Theta$, di cui i parametri $\Theta_s$ sono condivisi fra i task e i parametri $\Theta_A$ sono specifici al task $A$. L'obiettivo è aggiungere parametri $\Theta_B$ per il nuovo task usando solo i nuovi dati senza deteriorare la conoscenza precedentemente appresa.\\\\
+LWF inizia applicando il modello addestrato ai dati nuovi appena arrivati, registrando i risultati che esso produce. Dopodiché si addestra il modello, usando come loss la somma di due loss così definite:
+\begin{equation}\label{eq:lwf_lossnew}
+    loss_{new}(y_n, \overline{y}_n) = -y_n\cdot\log\overline{y}_n
+\end{equation}
+\begin{equation}\label{eq:lwf_lossnew}
+    loss_{old}(y_o, \overline{y}_o) = -\sum_{i=1}^l y_o^{'(i)}\log y_o^{'(i)}
+\end{equation}
+dove
+\begin{equation}\label{eq:lwf_lossnew}
+    y_o^{'(i)} = \frac{\left(y_o^{(i)}\right)^{1/T}}{\sum_j \left(y_o^{(j)}\right)^{1/T}},\:\:\:\:\:
+    \overline{y}_o^{'(i)} = \frac{\left(\overline{y}_o^{(i)}\right)^{1/T}}{\sum_j \left(\overline{y}_o^{(j)}\right)^{1/T}}
+\end{equation}
+$T$ è un parametro della \textit{Knowledge Distillation loss} settato a $T = 2$, $l$ è il numero di etichette, $y_n$ le etichette dei nuovi dati, $\overline{y}_n$ le predizioni dei nuovi dati, $y_o$ le precedenti previsioni del precedente modello e $\overline{y}_o$ le nuove previsioni del precedente modello.\\
+La nuova loss è quindi
+\begin{equation}\label{eq:lwf_loss}
+    \lambda_o\cdot loss_{old}(Y_o, \overline{Y}_o) + loss_{new}(Y_n, \overline{Y}_n) + R(\Theta_s, \Theta_o, \Theta_n)
+\end{equation}
+Dove $\lamba_o$ è un peso che viene impostato tanto più grande quanto più sono importanti i vecchi dati rispetto ai nuovi, e $R$ è una funzione di regolarizzazione dei parametri.\\\\
+Questo approccio, che tiene di conto della performance che il modello aveva fino all'arrivo dei nuovi dati, tende quindi a mantenere la rete neurale simile a quella già addestrata, evitando così di variare considerevolmente i pesi distanziandoli da quelli appresi sui dati precedenti.
+% TODO: dettagli implementativi?
 
 \section{Esperimenti}
 \subsection{Overview}  % approcci comuni ai diversi esperimenti: callback, struttura dei dati, parametri del modello...

@@ -12,7 +12,7 @@ import copy
 def get_run_logdir(label=""):
     import time
     run_id = time.strftime("total_wesad_%Y%m%d_%H%M%S")
-    return os.path.join("/home/fexed/ML/tensorboard_logs", run_id + "_" + label)
+    return os.path.join("tensorboard_logs", run_id + "_" + label)
 
 
 print(os.getpid())
@@ -34,8 +34,8 @@ epochs = []
 scores = []
 Xtr, ytr = None, None
 for S in ["S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S13", "S14", "S15", "S16", "S17"]:
-    Xs = pickle.load(open("/home/fexed/ML/datasets/WESAD/splitted/X" + S + "_disarli.pkl", 'rb'), encoding='latin1')
-    ys = pickle.load(open("/home/fexed/ML/datasets/WESAD/splitted/y" + S + "_disarli.pkl", 'rb'), encoding='latin1')
+    Xs = pickle.load(open("datasets/WESAD/splitted/X" + S + ".pkl", 'rb'), encoding='latin1')
+    ys = pickle.load(open("datasets/WESAD/splitted/y" + S + ".pkl", 'rb'), encoding='latin1')
 
     if (Xtr is None):
         Xtr = copy.deepcopy(Xs)
@@ -48,8 +48,8 @@ for S in ["S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S13", "
     print("Loaded " + S)
 
 
-Xts = pickle.load(open("/home/fexed/ML/datasets/WESAD/splitted/Xts.pkl", 'rb'), encoding='latin1')
-yts = pickle.load(open("/home/fexed/ML/datasets/WESAD/splitted/yts.pkl", 'rb'), encoding='latin1')
+Xts = pickle.load(open("datasets/WESAD/splitted/Xts.pkl", 'rb'), encoding='latin1')
+yts = pickle.load(open("datasets/WESAD/splitted/yts.pkl", 'rb'), encoding='latin1')
 print(str(Xtr.shape) + " " + str(Xts.shape))
 print("Dataset loaded")
 
