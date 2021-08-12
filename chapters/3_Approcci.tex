@@ -232,12 +232,22 @@ La nuova loss è quindi
 \begin{equation}\label{eq:lwf_loss}
     \lambda_o\cdot loss_{old}(Y_o, \overline{Y}_o) + loss_{new}(Y_n, \overline{Y}_n) + R(\Theta_s, \Theta_o, \Theta_n)
 \end{equation}
-Dove $\lamba_o$ è un peso che viene impostato tanto più grande quanto più sono importanti i vecchi dati rispetto ai nuovi, e $R$ è una funzione di regolarizzazione dei parametri.\\\\
+Dove $\lambda_o$ è un peso che è tanto più grande quanto più sono importanti i vecchi dati rispetto ai nuovi, e $R$ è una funzione di regolarizzazione dei parametri.\\\\
 Questo approccio, che tiene di conto della performance che il modello aveva fino all'arrivo dei nuovi dati, tende quindi a mantenere la rete neurale simile a quella già addestrata, evitando così di variare considerevolmente i pesi distanziandoli da quelli appresi sui dati precedenti.
 % TODO: dettagli implementativi?
 
 \section{Esperimenti}
-\subsection{Overview}  % approcci comuni ai diversi esperimenti: callback, struttura dei dati, parametri del modello...
+\subsection{Overview} 
+Gli esperimenti sono stati eseguiti su un comune personal computer, montante come sistema operativo Windows 10 in versione developer build 21390.2025 e all'interno della Windows Subsystem for Linux.\\\\% Specificare hardware?
+Le \textit{callback} utilizzate durante le sessioni di addestramento sono state le seguenti:
+\begin{itemize}
+    \item[-] \textit{TensorBoard}, per poter visualizzare in tempo reale l'andamento dell'addestramento delle varie reti.
+    \lstinputlisting[style=myPython, firstnumber=61, firstline=61, lastline=61]{code/wesad_totaltrain.py}
+    \item[-] \textit{EarlyStopping}, per poter fermare anticipatamente l'addestramento in caso di diverse epoche svolte senza ottenere risultati migliori. La fermata anticipata è stata impostata sulla loss calcolata sul validation set, con pazienza di 10 epoche e ripristino dei pesi della rete neurale migliori trovati.
+    \lstinputlisting[style=myPython, firstnumber=60, firstline=60, lastline=60]{code/wesad_totaltrain.py}
+\end{itemize}
+Tutti gli esperimenti sono stati eseguiti con batch di 256 elementi e per una durata massima 100 epoche, a meno di fermata anticipata. Inoltre il training set è sempre stato diviso in 75\% training set e 25\% validation set.
+\lstinputlisting[style=myPython, firstnumber=63, firstline=63, lastline=63]{code/wesad_totaltrain.py}
 % Esperimenti
 % Magari racconto velocemente i diversi approcci e difficoltà errori riscontrati?
 % Raccontare e delineare bene, tramite codice e grafici, esperimenti eseguiti con dettagli
