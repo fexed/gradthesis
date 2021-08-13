@@ -11,7 +11,7 @@
         \textbf{Offline} & 28 & 94,69s & 99,07 & - & - & - & 2061,40 Mb\\
         \textbf{Continual} & 49,14$\pm$33,67 & 947,24s & 73,13$\pm$4,02 & 0,7721 & 0,0343 & 0,5397 & 2173 Mb\\
         \textbf{Cumulative} & 39,71$\pm$19,91 & 2786s & 81,97$\pm$8,67 & 0,961 & 0,1383 & 0,4674 & 2291,45 Mb\\
-        \textbf{Replay} & 41,14$\pm$21,19 & 1063,51s & 78,29$\pm$3,32 & 0,7849 & 0,-0,002 & 0,4582 & 2184,77 Mb\\
+        \textbf{Replay} & 41,14$\pm$21,19 & 1063,51s & 78,29$\pm$3,32 & 0,7849 & -0,002 & 0,4582 & 2184,77 Mb\\
         \textbf{Episodic} & 35$\pm$26,26 & 1088,29s & 82,13$\pm$6,60 & 0,9095 & 0,0841 & 0,4226 & 2097,47 Mb\\
         \textbf{EWC} & 29,71$\pm$17,38 & 1342,81s & 70,74$\pm$4,74 & 0,7251 & 0,0113 & 0,4698 & 2187,40 Mb\\
         \textbf{LWF} & 44,29$\pm$18,30 & 3282,51s & 69,09$\pm$5,82 & 0,7419 & 0,0451 & 0,3248 & 2121,31 Mb\\
@@ -19,6 +19,13 @@
     \caption{Risultati WESAD}
     \label{tab:reswesad}
 \end{table}
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.95\textwidth]{img/graphs/wesad_final_metrics.png}
+		\caption{Risultati WESAD}
+		\label{fig:wesad_metrics_graph}
+	\end{center}
+\end{figure}
 
 \paragraph{ASCERTAIN} Usando come modello due layer GRU da 24 unità, su ASCERTAIN ho ottenuto i seguenti risultati:
 \begin{table}[h]
@@ -37,6 +44,13 @@
     \caption{Risultati ASCERTAIN}
     \label{tab:resascertain}
 \end{table}
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.95\textwidth]{img/graphs/ascertain_final_metrics.png}
+		\caption{Risultati ASCERTAIN}
+		\label{fig:ascertain_metrics_graph}
+	\end{center}
+\end{figure}
 \paragraph{Custom ASCERTAIN} Usando come modello due layer GRU da 24 unità, su ASCERTAIN con i soggetti fittizi ho ottenuto i seguenti risultati:
 \begin{table}[h]
 \footnotesize
@@ -49,11 +63,16 @@
         \textbf{Replay} & 12,125$\pm$12,94 & 299,52s & 87,13$\pm$0,75 & 0,2711 & -0,0012 & 0,306 & 2146,35 Mb\\
         \textbf{Episodic} & 5,5$\pm$3,94 & 319,76s & 82,19$\pm$3,95 & 0,339 & 0,0346 & 0,1043 & 2204,84 Mb\\
         \textbf{EWC} & 14,38$\pm$7,58 & 541,68s & 87,34$\pm$0,42 & 0,2467 & -0,0191 & 0,0845 & 2146,36 Mb\\
-        \textbf{LWF} & 20,75$\pm$8,42 & 771,36s & 86,91$\pm$0,89 & 0,5495 & -0,0333 & -0,146 & 2095,93 Mb\\
+        \textbf{LWF} & 20,75$\pm$8,42 & 771,36s & 86,91$\pm$0,89 & 0,2495 & -0,0333 & -0,146 & 2095,93 Mb\\
     \end{tabular}
     \caption{Risultati ASCERTAIN con soggetti fittizi bilanciati}
     \label{tab:rescustonascertain}
 \end{table}
-
-%TODO grafici
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.95\textwidth]{img/graphs/customascertain_final_metrics.png}
+		\caption{Risultati ASCERTAIN con soggetti fittizi}
+		\label{fig:customascertain_metrics_graph}
+	\end{center}
+\end{figure}
 %TODO ...scrivere
