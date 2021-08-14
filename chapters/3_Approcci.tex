@@ -22,11 +22,11 @@ otteniamo la misura dell'accuratezza che il modello \texttt{model} ottiene sul t
 Queste tre metriche sono state tratte e adattate dalla pubblicazione \textit{Gradient Episodic Memory for Continual Learning}$^{\cite{DBLP:journals/corr/Lopez-PazR17}}$, e si basano sulla costruzione di una matrice $R \in \mathbb{R}^{E\times T}$. Con $T$ si indica il numero di classi del problema in esame, e ogni volta che il modello finisce una sessione di addestramento tra le $E$ che vengono eseguite si va a valutare la sua \textit{test performance} su tutte le $T$ classi. Così facendo, su calcolano le $R_{i,j}\in R$ valutazioni dell'accuratezza del test di classificazione del modello sulla classe $t_j$ dopo aver osservato gli esempi della $i$-esima sessione di addestramento. Inoltre, una volta creato il modello con una inizializzazione dei pesi casuale si calcola $\overline{b}$, valutazione delle accuratezza nei test sui vari task.\\
 Possiamo ora definire le tre metriche:
 \begin{itemize}
-    \item[-] \textbf{ACC}, \textit{Average Accuracy} o accuratezza media
+    \item[-] \textbf{ACC}, \textit{Accuracy} o accuratezza
         \begin{equation}\label{eq:fun_acc}
             ACC = \frac{1}{T}\cdot\sum_{i=1}^T R_{E,i}
         \end{equation}
-    Va a misurare l'accuratezza media del modello su tutti le $T$ classi a fine addestramento
+    Va a misurare l'accuratezza del modello su tutti le $T$ classi a fine addestramento
     \item[-] \textbf{BWT}, \textit{Backward Transfer} o trasferimento all'indietro
         \begin{equation}\label{eq:fun_bwt}
             BWT = \frac{1}{T-1}\cdot\sum_{i=1}^T\left(\frac{1}{E}\sum_{j=1}^E R_{E,i} - R_{j,i}\right)
@@ -125,6 +125,7 @@ Per realizzare il flusso di dati necessario a implementare una strategia di cont
 Per poter misurare le metriche ACC, BWT e FWT degli approcci di continual learning, in ogni esperimento viene prima preparato il test set suddividendolo nelle varie classi:
 \lstinputlisting[style=myPython, firstnumber=21, firstline=21, lastline=22]{code/wesad_continualtrain.py}
 \lstinputlisting[style=myPython, firstnumber=24, firstline=24, lastline=44]{code/wesad_continualtrain.py}
+\pagebreak
 Subito dopo, appena viene creato il modello, vengono inizializzate le variabili necessarie e il vettore $\overline{b}$:
 \lstinputlisting[style=myPython, firstnumber=57, firstline=57, lastline=64]{code/wesad_continualtrain.py}
 Al termine di ogni sessione di training, cioè appena concluso l'addestramento su una coppia, vengono calcolati gli $R_{i,j}$:
@@ -149,6 +150,7 @@ Infine il modello è addestrato sul training set e validato sul validation set a
 Questa è la prima tecnica di replay provata. Consiste nel tenere una percentuale del training set attuale e usarla insieme al training set, cioè alla coppia, della sessione di addestramento successiva. Il procedimento è simile all'approccio continual learning precedente.\\\\
 Subito prima di avviare l'addestramento, vengono inizializzate le due variabili che conterranno il training set:
 \lstinputlisting[style=myPython, firstnumber=65, firstline=65, lastline=65]{code/wesad_continualreplaytrain.py}
+\pagebreak
 Appena caricati i soggetti, viene costruito il training set anche mantenendo ciò che è stato trattenuto dalla sessione precedente, se presente:
 \lstinputlisting[style=myPython, firstnumber=74, firstline=74, lastline=79]{code/wesad_continualreplaytrain.py}
 A fine sessione di addestramento, si trattiene la percentuale di replay (nell'esempio, il 25\%):
@@ -161,6 +163,7 @@ Viene realizzato semplicemente concatenando la coppia di soggetti al training se
 Nelle precedenti tecniche di replay si mantengono tutti i dati o un sottoinsieme scelto casualmente del training set. Con questa tecnica, invece, viene mantenuto di sessione in sessione un numero di esempi per ogni etichetta, così da avere un replay bilanciato rispetto alle classi.\\\\
 Subito prima di avviare l'addestramento, vengono inizializzate le "memorie episodiche" e il parametro $m$, che indica quanti esempi per classe mantenere (nell'esempio, $m = 70$):
 \lstinputlisting[style=myPython, firstnumber=68, firstline=68, lastline=69]{code/wesad_episodic.py}
+\pagebreak
 Al termine di una sessione di addestramento, il training set appena usato è suddiviso per classi:
 \lstinputlisting[style=myPython, firstnumber=105, firstline=105, lastline=108]{code/wesad_episodic.py}
 \lstinputlisting[style=myPython, firstnumber=112, firstline=112, lastline=115]{code/wesad_episodic.py}
@@ -275,6 +278,7 @@ La selezione del modello per ogni dataset è stata fatta in base all'accuratezza
         \item[-] Unità $\in [10, 40]$
     \end{itemize}
 \end{enumerate}
+\pagebreak
 Questo procedimento ha prodotto i seguenti modelli, uno per dataset:
 \begin{itemize}
     \item[-] Dataset \textbf{WESAD}\\
@@ -283,26 +287,23 @@ Questo procedimento ha prodotto i seguenti modelli, uno per dataset:
         \item[-] \textit{Learning rate} $= 0.005$
         \item[-] $\beta_1 = 0.99$
         \item[-] $\beta_2 = 0.99$
-        \item[-] Kernel $= 0.0001$
-        \item[-] Bias $= 0.0001$
-        \item[-] Output $= 0.0001$
+        \item[-] Kernel, bias, output $= 0.0001$
     \end{itemize}
     Il modello è capace di raggiungere in modo consistente il 99\% di accuratezza sul dataset durante l'addestramento offline. Questo lo rende un ottimo candidato per giudicare l'applicabilità dello stesso modello su diversi approcci di continual learning.
-    \pagebreak
     \item[-] Dataset \textbf{ASCERTAIN}\\
     Due layer GRU da 24 unità con i seguenti parametri:
     \begin{itemize}
         \item[-] \textit{Learning rate} $= 0.01$
         \item[-] $\beta_1 = 0.9$
         \item[-] $\beta_2 = 0.99$
-        \item[-] Kernel $= 0.00001$
-        \item[-] Bias $= 0.00001$
-        \item[-] Output $= 0.00001$
+        \item[-] Kernel, bias, output $= 0.00001$
     \end{itemize}
     Anche questo modello è stato selezionato in base all'accuratezza sul dataset, che si attesta intorno al 45\%.
 \end{itemize}
+La scelta dei modelli si è basata sui risultati ottenuti nell'addestramento offline poiché è interessante comparare gli approcci che considerano i dati come disponibili un po' per volta, gli approcci continual, al caso in cui i dati sono resi disponibili fin da subito. Questo consente di verificare il cambiamento di prestazioni del solito modello nei diversi casi.
 \subsection{Percentuale di replay}
-La percentuale di dati da ripetere nella sessione di addestramento successiva, secondo lo scenario di replay, è stata scelta provando diverse percentuali in base all'accuratezza e alle altre metriche misurate nel continual training su dataset WESAD.
+La percentuale di dati da ripetere nella sessione di addestramento successiva, secondo lo scenario di replay, è stata scelta provando diverse percentuali in base all'accuratezza e alle altre metriche misurate nel continual training su dataset WESAD.\\\\
+
 \begin{table}[h]
     \begin{center}
         \begin{tabular}{l|c|c|c|c}
@@ -311,16 +312,19 @@ La percentuale di dati da ripetere nella sessione di addestramento successiva, s
             $10\%$ & 74,55\% & 0,7589 & 0,007 & 0,5539\\
             $15\%$ & 75,94\% & 0,7593 & -0,005 & 0,4693\\
             $20\%$ & 74,50\% & 0,7568 & 0,0054 & 0,3342\\
-            \textbf{$25\%$} & \textbf{74,83\%} & \textbf{0,7707} & \textbf{0,0158} & \textbf{0,5275}\\
+            \textbf{25\%} & \textbf{74,83\%} & \textbf{0,7707} & \textbf{0,0158} & \textbf{0,5275}\\
             $33\%$ & 74,71\% & 0,7823 & 0,0105 & 0,5948\\
         \end{tabular}
         \caption{Comparazione fra diverse percentuali di replay}
         \label{tab:replayperctest}
     \end{center}
 \end{table}
-% TODO test sulla percentuale migliore con grafico
+
+La scelta è ricaduta sul 25\% di replay poiché le metriche misurate sono mediamente più alte delle altre percentuali, in particolare nel trasferimento di conoscenza. La scelta è anche influenzata dall'utilizzo di memoria, e un valore maggiore porta a modelli migliori pur usando più memoria durante l'addestramento.
+% TODO grafico?
+\pagebreak
 \subsection{Valore di $m$}
-Per quanto riguarda lo scenario episodic, l'iperparametro $m$ è stato scelto provando diversi valori sulla base dell'accuratezza e delle altre metriche misurate nell'episodic training su dataset WESAD.
+Per quanto riguarda lo scenario episodic, l'iperparametro $m$ è stato scelto provando diversi valori sulla base dell'accuratezza e delle altre metriche misurate nell'episodic training su dataset WESAD.\\\\
 \begin{table}[h]
     \begin{center}
         \begin{tabular}{l|c|c|c|c}
@@ -329,7 +333,7 @@ Per quanto riguarda lo scenario episodic, l'iperparametro $m$ è stato scelto pr
             $40$ & 79,07\% & 0,8450 & 0,0516 & 0,3752\\
             $50$ & 78,08\% & 0,8082 & 0,0253 & 0,5651\\
             $60$ & 79,50\% & 0,8979 & 0,0998 & 0,6109\\
-            \textbf{$70$} & \textbf{81,11\%} & \textbf{0,8589} & \textbf{0,0447} & \textbf{0,6351}\\
+            \textbf{70} & \textbf{81,11\%} & \textbf{0,8589} & \textbf{0,0447} & \textbf{0,6351}\\
             $80$ & 80,83\% & 0,9064 & 0,0957 & 0,4223\\
             $90$ & 80,92\% & 0,9031 & 0,0892 & 0,4793
         \end{tabular}
@@ -337,9 +341,16 @@ Per quanto riguarda lo scenario episodic, l'iperparametro $m$ è stato scelto pr
         \label{tab:episodicmtest}
     \end{center}
 \end{table}
-% TODO test su diversi m con grafico
 
+Viene scelto $m = 70$ poiché raggiunge un'accuratezza media superiore e un'accettabile trasferimento di conoscenza. Anche qua la scelta è dettata dall'utilizzo di memoria, e come dimostrato dai dati un valore maggiore di $m$ può risultare in generale preferibile.
+% TODO grafico?
 
+\section{Conclusione}
+La scelta degli approcci adottati, elemento centrale di questo progetto, si è rivelata particolarmente laboriosa. Anzitutto si è reso necessario inquadrare precisamente lo scopo del lavoro, cioè la comparazione fra diverse tecniche di continual learning applicate a dati relativi allo human state monitoring. Questo ha richiesto la selezione di dataset appropriati e in seguito la scelta di semplici approcci di continual learning che potessero essere comparati. La comparazione ha quindi richiesto la ricerca e la scelta di metriche che ne misurassero i diversi aspetti di trasferimento della conoscenza e dell'accuratezza media e finale, oltre che i tempi di addestramento e la memoria utilizzata.\\
+Il tutto è stato preceduto dalla ricerca e dallo studio personale dell'argomento, oltre che dalla scelta del linguaggio e delle librerie di sviluppo. Questo ha portato ad una lunga serie di esperimenti esplorativi, per poter studiare e testare i vari aspetti del machine learning e delle reti neurali prima, e del continual learning successivamente. Questi esperimenti hanno permesso di affrontare le diverse problematiche comuni ad un problema di machine learning: il preprocessing dei dati, l'individuazione degli iperparametri adatti ad un modello, la corretta progettazione di una rete neurale, i tempi di addestramento e altri ancora.\\\\
+Tutto questo lavoro è confluito in una serie di esperimenti finali che hanno prodotto i risultati presentati nel prossimo capitolo.
+
+% Aggiungere queste parti? \/
 % Esperimenti
 % Magari racconto velocemente i diversi approcci e difficoltà errori riscontrati?
 % dovrei parlare di tutti i tentativi ed esperimenti da giugno a ora o solamente degli approcci "finali" adottati?
