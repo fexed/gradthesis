@@ -32,7 +32,7 @@ Ciò che è interessante notare è che l'accuratezza è mantenuta sopra il 70\% 
 L'esperimento quindi dimostra come l'apprendimento continuo su dati sensoriali come respirazione, temperatura, elettrocardiogramma e simili possa portare a modelli con performance paragonabili all'apprendimento offline. Con un po' di \textit{fine-tuning} e \textit{model selection} con gli approcci continui si può probabilmente trovare un modello con performance ancora superiori a quelle sperimentate.
 \begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=0.5\textwidth]{img/graphs/wesad_final_accuracy.png}
+		\includegraphics[width=0.65\textwidth]{img/graphs/wesad_final_accuracy.png}
 		\caption{Accuratezza su WESAD}
 		\label{fig:wesad_accuracy_graph}
 	\end{center}
@@ -66,8 +66,6 @@ L'esperimento quindi dimostra come l'apprendimento continuo su dati sensoriali c
 Dall'approccio offline è subito chiaro come il dataset ASCERTAIN presenti una difficoltà maggiore rispetto a WESAD. In particolare, il dataset ASCERTAIN presenta dati particolarmente sbilanciati sulla classe 0 e informazioni riguardo le espressioni facciali dei soggetti durante l'esperimento. Questi dati sono di difficile classificazione.\\
 Gli approcci continui sono comunque in linea con i risultati sul precedente dataset, con la performance peggiore ottenuta dal \textit{Learning Without Forgetting} mentre la migliore è ottenuta dall'approccio cumulativo grazie ad un BWT superiore all'approccio di replay. In molti casi si nota un trasferimento negativo di conoscenza all'indietro, sintomo di un lieve caso di \textit{catastrophic forgetting}.\\\\
 Per poter dimostrare l'impatto dovuto allo sbilanciamento delle classi, il dataset ASCERTAIN è stato riorganizzato in soggetti "fittizi" come esposto di seguito.
-
-
 \pagebreak
 \paragraph{Custom ASCERTAIN} Dopo aver eseguito il preprocessing specificato precedentemente, tutti i dati di addestramento sono stati uniti in un unico insieme. Da questo insieme è stato estratto il test set, e il rimanente training set è stato suddiviso in 17 soggetti bilanciati da 108 sequenze di 160 punti ciascuno.\\
 Usando come modello due layer GRU da 24 unità, su ASCERTAIN con i soggetti fittizi sono stati registrati i seguenti risultati:
@@ -110,3 +108,4 @@ Dalle rimanenti metriche si nota comunque la difficoltà intrinseca del dataset,
 		\label{fig:customascertain_accuracy_graph}
 	\end{minipage}
 \end{figure}
+Questa variazione del dataset ASCERTAIN dimostra come il bilanciamento dei dati di training sia fondamentale nel corretto addestramento di una rete neurale. L'avere dei soggetti di partenza bilanciati a livello di classi contenute, e di conseguenza esempi di addestramento non fortemente sbilanciati su una o più classi come nel caso del dataset ASCERTAIN originale, porta ad avere un'addestramento della rete neurale di miglior qualità e risultati finali sensibilmente migliori.

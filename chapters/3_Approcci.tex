@@ -17,7 +17,8 @@ otterremo un modello la cui funzione di loss è la cross-entropia categorica, us
 \begin{lstlisting}[style = myPython]
 model.evaluate(Xtest, ytest)[1]
 \end{lstlisting}
-otteniamo la misura dell'accuratezza che il modello \texttt{model} ottiene sul test set composto dai dati \texttt{Xtest} e dalle label \texttt{ytest}.
+otteniamo la misura dell'accuratezza che il modello \texttt{model} ottiene sul test set composto dai dati \texttt{Xtest} e dalle label \texttt{ytest}.\\\\
+La misura di accuratezza indicata nei risultati è l'accuratezza media ottenuta dal modello durante le varie sessioni di addestramento.
 \subsection{ACC, FWT e BWT}
 Queste tre metriche sono state tratte e adattate dalla pubblicazione \textit{Gradient Episodic Memory for Continual Learning}$^{\cite{DBLP:journals/corr/Lopez-PazR17}}$, e si basano sulla costruzione di una matrice $R \in \mathbb{R}^{E\times T}$. Con $T$ si indica il numero di classi del problema in esame, e ogni volta che il modello finisce una sessione di addestramento tra le $E$ che vengono eseguite si va a valutare la sua \textit{test performance} su tutte le $T$ classi. Così facendo, su calcolano le $R_{i,j}\in R$ valutazioni dell'accuratezza del test di classificazione del modello sulla classe $t_j$ dopo aver osservato gli esempi della $i$-esima sessione di addestramento. Inoltre, una volta creato il modello con una inizializzazione dei pesi casuale si calcola $\overline{b}$, valutazione delle accuratezza nei test sui vari task.\\
 Possiamo ora definire le tre metriche:
@@ -33,7 +34,6 @@ Possiamo ora definire le tre metriche:
         \end{equation}
     Valuta l'influenza che ha una sessione di apprendimento sulle precedenti, valutando l'impatto che ha avuto sulle valutazioni dell'accuratezza in fase di test. Si ha un BWT positivo quando una sessione di addestramento migliora l'accuratezza delle precedenti già valutate, mentre un valore negativo indica che la sessione di addestramento ha deteriorato l'accuratezza che si otteneva grazie alla precedente conoscenza. Non è significativo parlare di BWT durante la prima sessione di addestramento.\\
     Un BWT fortemente negativo si ha nello scenario del \textit{catastrophic forgetting}.
-    \pagebreak
     \item[-] \textbf{FWT}, \textit{Forward Transfer} o trasferimento in avanti
         \begin{equation}\label{eq:fun_fwt}
             FWT = \frac{1}{T-1}\cdot\sum_{i=1}^T\left(\frac{1}{E}\sum_{j=1}^E R_{j,i} - \overline{b}_i\right)
@@ -57,7 +57,7 @@ Le altre metriche raccolte durante gli esperimenti sono le seguenti:
 
 \section{Baseline: l'approccio offline}
 Un classico addestramento di un modello di machine learning avviene raccogliendo i dati di training e sottoponendoli al modello tutti in una volta. Questo approccio è statico e produce un modello che sui futuri dati si comporterà tanto meglio quanto essi saranno simili ai dati di addestramento.\\
-La scelta di usare questo approccio classico come baseline è stata guidata dal principio che, avendo tutti i dati a disposizione in una sola volta, la rete neurale risultante dovrebbe avere le migliori prestazioni possibili sul test set una volta che viene sottoposto, e quindi fornisce un "limite superiore" all'accuratezza degli approcci continual. Una strategia di continual learning è tanto migliore quanto più si avvicina alle performance che la stessa rete neurale avrebbe se addestrata su tutti i dati in maniera offline.\\\\
+La scelta di usare questo approccio classico come baseline è stata guidata dal principio che, avendo tutti i dati a disposizione in una sola volta, la rete neurale risultante dovrebbe avere le migliori prestazioni possibili sul test set una volta che viene sottoposto, e quindi fornisce un "limite superiore" all'accuratezza degli approcci continual. Una strategia di continual learning è tanto migliore quanto più si avvicina alle performance che la stessa rete neurale avrebbe se addestrata su tutti i dati in maniera offline o, se possibile, quando la supera.\\\\
 L'approccio offline quindi avviene seguendo il seguente pseudo-algoritmo, applicabile sia a WESAD che ad ASCERTAIN:
 \begin{enumerate}
     \item \textbf{Creare e compilare la rete neurale} che verrà poi addestrata.\\
@@ -158,7 +158,7 @@ A fine sessione di addestramento, si trattiene la percentuale di replay (nell'es
 
 \subsection{Cumulative}  % si mantengono gli esempi precedenti nei successivi addestramenti, così all'arrivo dell'ultima coppia di soggetti il training set è uguale al caso offline
 Con questo approccio, si intende mantenere di volta in volta l'intero training set. Così facendo, con l'ultima coppia di soggetti si avrà un training set pari all'approccio offline, contenendo tutti i dati di tutti i precedenti soggetti, con cui addestrare la rete neurale già addestrata.\\\\
-Viene realizzato semplicemente concatenando la coppia di soggetti al training set già presente, se presente.
+Viene realizzato semplicemente concatenando la coppia di soggetti al training set usato durante l'ultima sessione di allenamento. Durante la prima sessione di allenamento, viene semplicemente usata la prima coppia di soggetti.
 \subsection{Episodic}  % si mantengono di volta in volta m esempi per ogni classe tratti dal training set
 Nelle precedenti tecniche di replay si mantengono tutti i dati o un sottoinsieme scelto casualmente del training set. Con questa tecnica, invece, viene mantenuto di sessione in sessione un numero di esempi per ogni etichetta, così da avere un replay bilanciato rispetto alle classi.\\\\
 Subito prima di avviare l'addestramento, vengono inizializzate le "memorie episodiche" e il parametro $m$, che indica quanti esempi per classe mantenere (nell'esempio, $m = 70$):
@@ -272,7 +272,7 @@ La selezione del modello per ogni dataset è stata fatta in base all'accuratezza
     \end{itemize}
     \item Selezione della struttura della rete neurale\\
     La rete neurale è stata scelta in base alla migliore performance ottenuta dopo 5 epoche di apprendimento.\\
-    I parametri presi in considerazione sono:
+    Le configurazioni prese in considerazione sono:
     \begin{itemize}
         \item[-] Layer $\in \{1, 2, 3, 4\}$
         \item[-] Unità $\in [10, 40]$
@@ -302,8 +302,7 @@ Questo procedimento ha prodotto i seguenti modelli, uno per dataset:
 \end{itemize}
 La scelta dei modelli si è basata sui risultati ottenuti nell'addestramento offline poiché è interessante comparare gli approcci che considerano i dati come disponibili un po' per volta, gli approcci continual, al caso in cui i dati sono resi disponibili fin da subito. Questo consente di verificare il cambiamento di prestazioni del solito modello nei diversi casi.
 \subsection{Percentuale di replay}
-La percentuale di dati da ripetere nella sessione di addestramento successiva, secondo lo scenario di replay, è stata scelta provando diverse percentuali in base all'accuratezza e alle altre metriche misurate nel continual training su dataset WESAD.\\\\
-
+La percentuale di dati da ripetere nella sessione di addestramento successiva, secondo lo scenario di replay, è stata scelta provando diverse percentuali in base all'accuratezza e alle altre metriche misurate nel continual training su dataset WESAD, con i risultati presentati nella tabella \ref{tab:replayperctest}.\\
 \begin{table}[h]
     \begin{center}
         \begin{tabular}{l|c|c|c|c}
@@ -319,12 +318,11 @@ La percentuale di dati da ripetere nella sessione di addestramento successiva, s
         \label{tab:replayperctest}
     \end{center}
 \end{table}
-
 La scelta è ricaduta sul 25\% di replay poiché le metriche misurate sono mediamente più alte delle altre percentuali, in particolare nel trasferimento di conoscenza. La scelta è anche influenzata dall'utilizzo di memoria, e un valore maggiore porta a modelli migliori pur usando più memoria durante l'addestramento.
 % TODO grafico?
 \pagebreak
 \subsection{Valore di $m$}
-Per quanto riguarda lo scenario episodic, l'iperparametro $m$ è stato scelto provando diversi valori sulla base dell'accuratezza e delle altre metriche misurate nell'episodic training su dataset WESAD.\\\\
+Per quanto riguarda lo scenario episodic, l'iperparametro $m$ è stato scelto provando diversi valori sulla base dell'accuratezza e delle altre metriche misurate nell'episodic training su dataset WESAD, ottenendo i risultati elencati nella tabella \ref{tab:episodicmtest}\\\\
 \begin{table}[h]
     \begin{center}
         \begin{tabular}{l|c|c|c|c}
