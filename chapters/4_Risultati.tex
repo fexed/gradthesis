@@ -109,3 +109,104 @@ Dalle rimanenti metriche si nota comunque la difficoltà intrinseca del dataset,
 	\end{minipage}
 \end{figure}
 Questa variazione del dataset ASCERTAIN dimostra come il bilanciamento dei dati di training sia fondamentale nel corretto addestramento di una rete neurale. L'avere dei soggetti di partenza bilanciati a livello di classi contenute, e di conseguenza esempi di addestramento non fortemente sbilanciati su una o più classi come nel caso del dataset ASCERTAIN originale, porta ad avere un'addestramento della rete neurale di miglior qualità e risultati finali sensibilmente migliori.
+\section{Approcci continui a confronto}
+Dai risultati ottenuti e elencati nelle tabelle \ref{tab:reswesad}, \ref{tab:resascertain} e \ref{tab:rescustomascertain} possiamo mettere a confronto fra loro i diversi approcci di continual learning presi in considerazione.
+
+\begin{table}[h]
+\footnotesize
+    \begin{tabular}{l|c|c|c|c|c|c|c}
+        \textbf{Dataset} & \textbf{Epoche} & \textbf{Tempo} & \textbf{Acc.} & \textbf{ACC} & \textbf{BWT} & \textbf{FWT} & \textbf{Memoria}\\
+        \hline
+        \textbf{WESAD} & 49,14$\pm$33,67 & 947,24s & 73,13$\pm$4,02 & 0,7721 & 0,0343 & 0,5397 & 2173 Mb\\
+        \textbf{ASCERTAIN} & 10,88$\pm$5,01 & 249,28s & 37,45$\pm$5,01 & 0,25 & -0,0168 & 0,0213 & 2154,36 Mb\\
+        \textbf{Cust. ASC.} & 7,75$\pm$5,33 & 226,24s & 87,01$\pm$0,64 & 0,2481 & -0,0241 & 0,0052 & 2143,71 Mb\\
+    \end{tabular}
+    \caption{Risultati dell'approccio continual}
+    \label{tab:rescontinual}
+\end{table}
+
+L'approccio continuativo più semplice ottiene sui dataset risultati sempre comparabili all'approccio offline utilizzato come baseline. Come elencato in tabella \ref{tab:rescontinual}, l'approccio continual su dataset WESAD ottiene un'accuratezza media del 73.13\%, da confrontare all'approccio offline con un'accuratezza del 99.07\%. Questo primo risultato porta ad una considerazione: su dataset come WESAD, cioè contenenti dati "facili", già solo l'approccio continuativo più triviale ottiene risultati non ottimi ma comunque buoni, anche dimostrato dalla metrica BWT di 0,0343 e dall'FWT di 0,5397 che indicano un buon trasferimento della conoscenza.\\
+ASCERTAIN d'altro canto ottiene solo un risultato del 42.78\% offline, ma anche qua l'approccio continual ottiene un paragonabile 37.45\% di accuratezza media, ma con un'accuratezza finale solo del 25\% (che su quattro classi da inferire è equivalente al tirare a indovinare). ASCERTAIN con i soggetti fittizi, invece, ottiene un 87.01\% di accuratezza sull'approccio continual a fronte dell'87.77\% ottenuto dall'approccio offline, dimostrando l'importanza delle classi bilanciate, ma ottenendo solo il 24.81\% di accuratezza finale.
+
+\begin{table}[h]
+\footnotesize
+    \begin{tabular}{l|c|c|c|c|c|c|c}
+        \textbf{Dataset} & \textbf{Epoche} & \textbf{Tempo} & \textbf{Acc.} & \textbf{ACC} & \textbf{BWT} & \textbf{FWT} & \textbf{Memoria}\\
+        \hline
+        \textbf{WESAD} & 39,71$\pm$19,91 & 2786s & 81,97$\pm$8,67 & 0,961 & 0,1383 & 0,4674 & 2291,45 Mb\\
+        \textbf{ASCERTAIN} & 9,25$\pm$6,81 & 932,56s & 39,06$\pm$4,26 & 0,2697 & 0,0064 & 0,0278 & 2297,17 Mb\\
+        \textbf{Cust. ASC.} & 7,25$\pm$8,80 & 872,8s & 87,66$\pm$0,16 & 0,2773 & 0,0032 & 0,0801 & 2273,07 Mb\\
+    \end{tabular}
+    \caption{Risultati dell'approccio cumulative}
+    \label{tab:rescumulative}
+\end{table}
+
+L'approccio cumulativo, i cui risultati sono elencati nella tabella \ref{tab:rescumulative}, evidenzia fin da subito l'effetto che il replay degli esempi ha sull'addestramento continuativo.\\
+Sul dataset WESAD, l'approccio cumulativo raggiunge un'accuratezza media dell'81.97\% e finale del 96.10\%, cioè quasi a livello con l'approccio offline che ottiene un'accuratezza del 99.07\%. Anche BWT e FWT evidenziano un buon trasferimento della conoscenza, attestandosi rispettivamente su 0.1383 e 0.4674.\\
+Il dataset ASCERTAIN evidenzia ancora una volta la propria difficoltà, con un'accuratezza media dell'approccio cumulativo pari a 39.06\% e finale del 26.97\%, comunque molto ridotta rispetto al 42.78\% dell'addestramento offline. Con i soggetti bilanciati, otteniamo un'accuratezza dell'87.66\%, da comparare al quasi identico 87.77\% di accuratezza dell'approccio offline, ma un'accuratezza finale del 27.73\%. In entrambi i casi, il BWT indica un trasferimento all'indietro della conoscenza quasi nullo, rispettivamente dello 0.0064 e dello 0.0032, e analogamente l'FWT, dello 0.0278 e dello 0.0801 rispettivamente.
+
+\begin{table}[h]
+\footnotesize
+    \begin{tabular}{l|c|c|c|c|c|c|c}
+        \textbf{Dataset} & \textbf{Epoche} & \textbf{Tempo} & \textbf{Acc.} & \textbf{ACC} & \textbf{BWT} & \textbf{FWT} & \textbf{Memoria}\\
+        \hline
+        \textbf{WESAD} & 41,14$\pm$21,19 & 1063,51s & 78,29$\pm$3,32 & 0,7849 & -0,002 & 0,4582 & 2184,77 Mb\\
+        \textbf{ASCERTAIN} & 13,25$\pm$10,03 & 402,96s & 39,48$\pm$4,37 & 0,2603 & -0,014 & 0,0485 & 2173,95 Mb\\
+        \textbf{Cust. ASC.} & 12,125$\pm$12,94 & 299,52s & 87,13$\pm$0,75 & 0,2711 & -0,0012 & 0,306 & 2146,35 Mb\\
+    \end{tabular}
+    \caption{Risultati dell'approccio con il 25\% di replay}
+    \label{tab:resreplay}
+\end{table}
+Comparandolo al 99.07\% dell'approccio offline, sul dataset WESAD avere il 25\% di replay fa ottenere risultati ovviamente inferiori all'81.97\% dell'approccio continuativo ma consente comunque di superare il 73.13\% dell'approccio continual, ottenendo un 78.29\% di accurateza media e un 78.49\% di accuratezza finale. Nonostante il BWT di -0.002, quasi nullo, si ha un buon trasferimento in avanti della conoscenza come provato dall'FWT di 0.4582.\\
+ASCERTAIN ha un comportamento simile: l'approccio che usa il il 25\% di replay ottiene il 39.48\% di accuratezza media e il 26.03\% di accuratezza finale che supera l'approccio continual e anche quello cumulativo. Lo stesso non si può dire di ASCERTAIN con i soggetti fittizi, che come per WESAD ottiene un'accuratezza sul 25\% di replay che si attesta a metà tra l'approccio continual e quello cumulativo. I risultati sono elencati nella tabella \ref{tab:resreplay}
+
+% offline
+% WESAD: 28 epoche, 94.69s, 99,07%, 2061.40 Mb
+% ASCERTAIN: 3 epoche, 29.14s, 42.78%, 1817.28 Mb
+% CUSTOM ASCERTAIN: 29 epoche, 66.17s, 87.77%, 1945.91 Mb
+\begin{table}[h]
+\footnotesize
+    \begin{tabular}{l|c|c|c|c|c|c|c}
+        \textbf{Dataset} & \textbf{Epoche} & \textbf{Tempo} & \textbf{Acc.} & \textbf{ACC} & \textbf{BWT} & \textbf{FWT} & \textbf{Memoria}\\
+        \hline
+        \textbf{WESAD} & 35$\pm$26,26 & 1088,29s & 82,13$\pm$6,60 & 0,9095 & 0,0841 & 0,4226 & 2097,47 Mb\\
+        \textbf{ASCERTAIN} & 12,62$\pm$7,94 & 498,24s & 38,80$\pm$4,04 & 0,2742 & 0,0048 & 0,0156 & 2231,42 Mb\\
+        \textbf{Cust. ASC.} & 5,5$\pm$3,94 & 319,76s & 82,19$\pm$3,95 & 0,339 & 0,0346 & 0,1043 & 2204,84 Mb\\
+    \end{tabular}
+    \caption{Risultati dell'approccio episodico con $m = 70$}
+    \label{tab:resepisodic}
+\end{table}
+% episodico
+Utilizzando un replay statico e bilanciato nelle classi, vale a dire l'approccio episodico i cui risultati sono elencati in tabella \ref{tab:resepisodic}, i risultati su WESAD sono comparabili all'approccio cumulativo pur usando quasi il 10\% in meno di memoria: l'approccio episodico raggiunge l'82.13\% di accuratezza media mentre quello cumulativo l'81.97\%, ottenendo però un'accuratezza finale del 96.10\% rispetto al 90.95\% dell'approccio episodico.\\
+Sul dataset ASCERTAIN abbiamo una situazione simile: l'approccio cumulativo ottiene il 38.80\% di accuratezza mentre con l'episodico si raggiunge il 39.06\% usando il 3\% in meno di memoria. Lo stesso discorso non si può dire per il dataset ASCERTAIN con i soggetti fittizi, che ottiene un'accuratezza media dell'82.19\% inferiore all'87.66\% dell'approccio cumulativo.
+
+\begin{table}[h]
+\footnotesize
+    \begin{tabular}{l|c|c|c|c|c|c|c}
+        \textbf{Dataset} & \textbf{Epoche} & \textbf{Tempo} & \textbf{Acc.} & \textbf{ACC} & \textbf{BWT} & \textbf{FWT} & \textbf{Memoria}\\
+        \hline
+        \textbf{WESAD} & 29,71$\pm$17,38 & 1342,81s & 70,74$\pm$4,74 & 0,7251 & 0,0113 & 0,4698 & 2187,40 Mb\\
+        \textbf{ASCERTAIN} & 24,14$\pm$16,94 & 810,96s & 36,08$\pm$5,66 & 0,2497 & -0,0183 & -0,0003 & 2171,62 Mb\\
+        \textbf{Cust. ASC.} & 14,38$\pm$7,58 & 541,68s & 87,34$\pm$0,42 & 0,2467 & -0,0191 & 0,0845 & 2146,36 Mb\\
+    \end{tabular}
+    \caption{Risultati dell'approccio EWC}
+    \label{tab:resewc}
+\end{table}
+% EWC
+Il primo dei due metodi provati che non si basano sui replay, l'Elastic Weight Consolidation nei risultati in tabella \ref{tab:resewc}, presenta su WESAD un'accuratezza inferiore anche all'approccio continual triviale: quest'ultimo otteneva un'accuratezza media del 73.13\% con un'accuratezza finale del 77.21\%, mentre EWC raggiunge l'accuratezza media del 70.74\% con un'accuratezza finale del 72.51\%. Nonostante questo, il trasferimento di conoscenza è paragonabile, seppur inferiore, all'approccio continual triviale.\\
+Su ASCERTAIN il risultato presenta le medesime caratteristiche: con un'accuratezza media del 36.08\% e un'accuratezza finale del 24.97\% risulta di poco inferiore all'approccio continual triviale. Discorso diverso per ASCERTAIN con i soggetti fittizi, che riesce a ottenere un'accuratezza finale leggermente superiore all'approccio continual triviale con 87.34\% rispetto al 87.01\% e anhe metriche BWT e FWT superiori.
+
+\begin{table}[h]
+\footnotesize
+    \begin{tabular}{l|c|c|c|c|c|c|c}
+        \textbf{Dataset} & \textbf{Epoche} & \textbf{Tempo} & \textbf{Acc.} & \textbf{ACC} & \textbf{BWT} & \textbf{FWT} & \textbf{Memoria}\\
+        \hline
+        \textbf{WESAD} & 44,29$\pm$18,30 & 3282,51s & 69,09$\pm$5,82 & 0,7419 & 0,0451 & 0,3248 & 2121,31 Mb\\
+        \textbf{ASCERTAIN} & 21,62$\pm$10,20 & 879,68s & 35,69$\pm$5,43 & 0,2448 & 0.0327 & 0,0156 & 2103 Mb\\
+        \textbf{Cust. ASC.} & 20,75$\pm$8,42 & 771,36s & 86,91$\pm$0,89 & 0,2495 & -0,0333 & -0,146 & 2095,93 Mb\\
+    \end{tabular}
+    \caption{Risultati dell'approccio LWF}
+    \label{tab:reslwf}
+\end{table}
+% LWF
+Learning Without Forgetting, nei risultati in tabella \ref{tab:reslwf}, ha risultati comparabili ad EWC. Su WESAD risulta inferiore all'approccio continual triviale, con 69.09\% di accuratezza media contro il 70.74\% del continual, come per ASCERTAIN e ASCERTAIN con soggetti fitizi. Quest'ultimo in particolare risulta anche questa volta inferiore, seppur di poco, all'approccio continual. % TODO: rivedere
