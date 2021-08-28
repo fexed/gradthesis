@@ -1,5 +1,85 @@
-\chapter{Obiettivi}
+\chapter{Preliminari}
 In un mondo sempre più interconnesso e in rapida evoluzione, approcci statici al machine learning possono diventare impraticabili quando si tratta di produrre sistemi in grado di adattarsi dinamicamente allo stato fisico e mentale degli utenti che vi interagiscono. Inoltre, con l'ampia presenza di dispositivi in grado di raccogliere anche in tempo reale informazioni sulla condizione attuale degli utenti, diventano continuamente disponibili nuovi dati con cui perfezionare i modelli di machine learning in uso attraverso tecniche di continual learning.
+
+\subsection*{Human State Monitoring}
+Uno di questi contesti è lo \textit{Human State Monitoring}. Con questo termine si indica l'obiettivo di un sistema di raccogliere dati riguardanti l'attuale stato psico-fisico di un individuo e trarre conclusioni sulla sua condizione attuale, ad esempio interpretando un battito cardiaco elevato insieme ad un alto livello di sudorazione come uno stato di stress, o determinati movimenti facciali come una condizione di sonnolenza. L'avere a disposizione metodi efficienti nel catalogare queste condizioni umane può portare a sistemi responsivi e adattivi, che modificano le proprie interfacce o i propri comportamenti accomodando lo stato psico-fisico attuale dell'utente.\\\\
+Un esempio di questa applicazione lo si può trovare nel progetto europeo\\TEACHING$^{\cite{teaching2020}}$, che mira alla produzione di un toolkit per costruire applicazioni autonome efficienti che facciano uso di intelligenza simile a quella umana. L'obiettivo di questo toolkit è supportare lo sviluppo e il rilascio di applicazioni che possano sfruttare il feedback umano per ottimizzare, personalizzare e guidare il modo in cui esse forniscono i propri servizi. In altre parole, applicazioni che sfruttino lo \textit{Human State Monitoring} per adattarsi dinamicamente alle condizioni dell'utente in tempo reale.\\
+Per poter realizzare questo continuo adattamento è necessario, oltre al flusso di dati in tempo reale sullo stato corrente dell'utente, anche un sistema che sappia efficientemente e correttamente interpretare questi dati e trarre conclusioni sulle attuali condizioni della persona. Questa situazione rispetta le classiche caratteristiche necessarie all'applicazione del machine learning: abbiamo dati raccolti da sensori che possono essere difettosi, per cui i dati possono contenere incertezze o essere rumorosi o incompleti, ed essendo in esame lo stato umano è molto difficile, se non impossibile, formalizzare attraverso una serie di formule la classificazione di questi dati in categorie comportamentali come affaticamento o sonnolenza.
+
+% breve introduzione al mondo dell'addestramento machine learning per introdurre i concetti fondamentali per la tesi
+\subsection*{Addestramento} L'addestramento supervisionato di un modello di machine learning avviene attraverso l'utilizzo di un insieme di dati chiamato \textit{training set}. Questo insieme contiene dati a cui è stata assegnata un'etichetta, e si contrappone all'apprendimento non supervisionato dove ai dati di addestramento non è assegnata alcuna etichetta. Nel nostro caso, prenderemo in considerazione l'apprendimento supervisionato.\\
+Il modello di machine learning, attraverso una serie di algoritmi, elabora questi dati e le loro etichette cercando di apprendere quali etichette sono assegnate a quali dati. Per verificare l'apprendimento, si sottopone al modello addestrato dei dati non etichettati, denominati \textit{test set}, e si verificano le etichette che il modello assegna a tali dati controllando se ha classificato correttamente o meno. La percentuale di classificazioni corrette è chiamata \textbf{accuratezza} del modello.
+
+\subsection*{Loss} Per misurare l'andamento dell'apprendimento di un modello di machine learning, vengono usate funzioni che vanno a valutare il modello in base alle risposte che fornisce sui dati etichettati, confrontandole con le etichette vere. Queste funzioni prendono il nome di funzioni di \textit{loss}, e ne esistono di diversi tipi a seconda del problema in esame: ad esempio, nei problemi dove ad ogni input va assegnata una risposta si/no (classificazione binaria) una loss molto usata è la cross-entropia binaria (\textit{binary crossentropy}).
+
+\subsection*{Reti Neurali} In letteratura vengono studiati moltissimi modelli di machine learning. Si va dai più semplici come i modelli lineari, nei quali abbiamo un'equazione nella forma $y = w_0x + w_1$ e dobbiamo apprendere i $w_0$ e $w_1$ che ai dati $x$ fanno corrispondere le corrette etichette $y$, alle \textit{Support Vector Machine}, che cercano di trovare dei confini di divisione fra insiemi di dati in modo da classificarli.\\
+Un'ampia area di modelli di machine learning è quella delle cosiddette \textbf{reti neurali}, studiate sin dagli anni '40. Esse prendono liberamente spunto dalla struttura dei neuroni del cervello umano (Figura \ref{fig:neurone}), che sono stati schematizzati in strutture matematiche denominate \textbf{perceptron}.
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.75\textwidth]{img/neurone.png}
+		\caption{Neurone (credits: Quasar, Wikipedia)}
+		\label{fig:neurone}
+	\end{center}
+\end{figure}
+In un perceptron (Figura \ref{fig:perceptron}), ad ogni input $x_i$ è assegnato un peso $w_i$ che lo rende più o meno importante nel contribuire al risultato $y$, che viene calcolato dal nodo attraverso la \textbf{funzione di attivazione}.\\\\
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{img/perceptron.png}
+		\caption{Perceptron}
+		\label{fig:perceptron}
+	\end{center}
+\end{figure}
+Una rete neurale (Figura \ref{fig:reteneurale}) è composta da un insieme di perceptron collegati fra loro suddivisi su livelli, o \textit{layer}: una rete neurale composta da un elevato numero di layer è detta profonda, o \textit{deep neural network}, e i layer interni sono detti layer nascosti.
+\begin{figure}[b]
+	\begin{center}
+		\includegraphics[width=0.75\textwidth]{img/reteneurale.jpg}
+		\caption{Esempio di rete neurale}
+		\label{fig:reteneurale}
+	\end{center}
+\end{figure}
+\\\\
+Le funzioni di attivazione possono essere funzioni di qualsiasi tipo, ma le più usate e studiate sono funzioni specifiche come ReLU e softmax. La funzione ReLU (\textit{Rectified Linear Unit}) è molto semplice e veloce da calcolare: restituisce la parte positiva del proprio input, e consente un migliore apprendimento nelle reti neurali profonde$^{\cite{pmlr-v15-glorot11a}}$.
+\begin{equation}\label{eq:fun_relu}
+ReLU(x) = max(0, x)
+\end{equation}
+La funzione softmax, invece, prende in input un vettore di $K$ valori e lo comprime in un vettore sempre di $K$ valori ma compresi in un intervallo $(0, 1)$ e la cui somma è 1. Vengono usate nel layer finale delle reti neurali classificatrici: ogni valore $\sigma(\textbf{z})_j$  è interpretabile come la probabilità che l'input appartenga ala classe $j$ fra le $K$ possibili.
+\begin{equation}\label{eq:fun_softmax}
+\sigma(\textbf{z})_j = \frac{e^{z_j}}{\sum_{k=1}^K e^{z_k}}\:\:\:\:per\:\:j = 1,\ldots,K
+\end{equation}
+Le funzioni di attivazione descrivono quindi il comportamento dei nodi di una rete neurale e la scelta della funzione di attivazione è un elemento importante nella strutturazione di una rete neurale. Abbiamo fatto l'esempio di ReLU, tipicamente usata nei layer nascosti, e di softmax, usata nei layer di output, ma ce ne sono molte altre adatte per altri problemi.
+\subsection*{Tipologie} La struttura interna di una rete neurale influenza particolarmente i risultati che essa può ottenere. A seconda del problema che si vuole risolvere, si può avere bisogno di reti neurali con strutture interne più complesse per ottenere risultati apprezzabili. In particolare, in letteratura attualmente alcune delle strutture più studiate sono (Figura \ref{fig:tipologiereti}):
+\begin{itemize}
+    \item[-] Reti Feed Forward (FF)
+    \item[-] Reti Neurali Ricorrenti (RNN, Recurrent Neural Networks)
+    \item[-] Auto Encoders (AE)
+    \item[-] Reti Profonde Convolutive (DCN, Deep Convolutional Networks)
+    \item[-] Echo State Networks (ESN)
+\end{itemize}
+e moltissime altre. Alcune strutture sono particolarmente usate su certe tipologie di problemi: ad esempio, le DCN hanno una struttura ispirata alla corteccia visiva animale e sono particolarmente usate nel campo del riconoscimento delle immagini e del linguaggio parlato, mentre le RNN mantengono informazioni riguardo gli input precedenti e consentono di modellare i comportamenti dinamici e ricorrenti delle sequenze temporali.
+\begin{figure}[b]
+	\begin{center}
+		\includegraphics[width=0.95\textwidth]{img/tipologiereti.png}
+		\caption{Esempi di reti neurali}
+		\label{fig:tipologiereti}
+	\end{center}
+\end{figure}
+
+\subsection*{Backpropagation} La retropropagazione dell'errore, \textit{backward propagation of errors}, è l'algoritmo più diffuso per l'addestramento supervisionato delle reti neurali. Questo algoritmo consiste di due fasi:
+\begin{itemize}
+    \item[-] \textit{Forward phase}, dove gli input vengono elaborati dalla rete neurale fino a produrre un output
+    \item[-] \textit{Backward phase}, dove l'output prodotto è confrontato con la vera etichetta assegnata e, attraverso calcoli differenziali, vengono individuati i contributi all'errore di ogni nodo. Con questi contributi, attraverso un algoritmo di ottimizzazione (solitamente, la discesa di gradiente), vengono modificati i pesi delle connessione fra i nodi, partendo dai nodi output e risalendo la rete fino ai nodi input.
+\end{itemize}
+Questo algoritmo richiede quindi che le funzioni di attivazione dei nodi siano differenziabili, e può soffrire di un problema che prende il nome di \textit{vanishing/exploding gradient problem}, o problema della scomparsa/esplosione del gradiente. Nel dettaglio, attraverso questo algoritmo ogni parametro del modello viene modificato, durante la \textit{backward phase}, in maniera proporzionale alla derivata parziale della funzione \textit{loss} rispetto al parametro stesso. Propagando all'indietro attraverso la regola della catena$^{(\ref{eq:catena})}$ dei gradienti compresi nell'intervallo $[0, 1]$, come nel caso di alcune funzioni di attivazione, il prodotto diventa tanto più piccolo quanto più è profonda la rete neurale o, viceversa, esplodere in caso di gradienti dai valori elevati.
+\begin{equation}\label{eq:catena}
+D\left[f(g(x))\right] = f'(g(x))\cdot g'(x)
+\end{equation}
+Questo problema viene mitigato dall'uso di funzioni di attivazioni diverse, come le già citate ReLU$^{(\ref{eq:fun_relu})}$ e softmax$^{(\ref{eq:fun_softmax})}$, o dall'uso di algoritmi di addestramento che fanno uso solo del segno del gradiente e non della sua norma, come l'algoritmo Rprop$^{\cite{Riedmiller92rprop-}}$.\\
+Nelle reti neurali ricorrenti, un grande contributo alla mitigazione del problema è avvenuto grazie all'introduzione delle LSTM, \textit{Long-Short Term Memory}, che mantengono informazioni sullo stato del modello senza propagarle attraverso funzioni non lineari.
+
+\subsection*{Continual Learning} L'addestramento di un modello di machine learning attraverso un \textit{training set} disponibile fin da subito e fornito al modello tutto in una volta è denominato "addestramento \textit{offline}", o \textit{offline training}. Esistono contesti, però, dove i dati necessari o utili all'addestramento non sono subito tutti disponibili, ma diventano tali col passare del tempo. Un esempio di questa situazione sono i sistemi di raccomandazione in servizi come Netflix o YouTube: essi imparano continuamente i gusti dell'utente, in modo da fornire suggerimenti su video e film sempre adatti ai gusti del momento. Questa situazione, in cui i dati di addestramento diventano disponibili col passare del tempo e cioè di addestramento continuativo, è detta "addestramento \textit{continual}", o \textit{continual learning}.\\
+Nel caso del \textit{continual learning}, un grosso ostacolo è quello denominato \textit{catastrophic forgetting}$^{\cite{MCCLOSKEY1989109}}$: quando una rete neurale già addestrata viene addestrata su nuovi dati, essa tenderà a dimenticare ciò che ha appreso sui dati precedenti. Questa situazione è una manifestazione del cosiddetto dilemma della \textbf{plasticità-stabilità}: si ha stabilità quando la nuova conoscenza non interferisce con la vecchia conoscenza, mentre la plasticità è ottenuta quando la nuova conoscenza migliora la conoscenza precedente e viceversa. Questi due obiettivi sono in contrapposizione fra loro e mantenere un buon compromesso fra i due è uno degli obiettivi chiave degli algoritmi e attuale campo di studio.\\\\
+Il continual learning si rende ancora più necessario in un mondo in continua e rapida evoluzione, e apporta al machine learning un cambiamento di paradigma al pari dell'introduzione della filosofia Agile$^{\cite{agilemanifesto}}$ nel mondo dell'ingegneria del software: mentre in molti dei modelli di machine learning correnti l'addestramento è eseguito da zero e il modello viene utilizzato così com'è, con un procedimento al pari dei primi approcci "a cascata" allo sviluppo software, il continual learning fornisce a questo mondo la possibilità di produrre modelli che vengono migliorati iterativamente ogni volta che c'è bisogno senza dover addestrare un nuovo modello da zero. "Il parallelismo sta nell'equiparare i dati ai requisiti (arrivano in maniera continuativa e cambiano nel tempo) e l'addestramento alla fase di design e sviluppo, che porta al prodotto software (che nel nostro caso è la funzione di predizione realizzata dal modello di machine learning)."$^{\cite{lomonaco_2019}}$
+
 \section{Stato dell'Arte}
 \subsection{Continual Learning} L'ambito del continual learning è in continua evoluzione. Negli ultimi anni, studi come \textit{Learning without Forgetting}$^{\cite{li2017learning}}$ o \textit{Overcoming catastrophic forgetting in neural networks}$^{\cite{kirkpatrick2017overcoming}}$ hanno affrontato il problema del \textit{catastrophic forgetting} proponendo soluzioni da adottare durante l'addestramento delle reti neurali. In \textit{Learning without Forgetting} viene proposto l'omonimo approccio, LWF, che non usa dati relativi alla conoscenza già appresa ma solo i nuovi dati relativi alla nuova conoscenza, imparando parametri del modello specifici per i nuovi dati ma che abbiano performance non impattatti sulla conoscenza già presente. Nel secondo studio viene proposto un algoritmo che prende il nome di \textit{Elastic Weight Consolidation}, o EWC, che interpreta i parametri da apprendere della rete neurale come spazi probabilistici, e rende meno probabile la modifica di quei parametri che risultano importanti per la conoscenza già appresa quando si addestra su nuova conoscenza.\\
 Ulteriori studi hanno proposto approcci definiti \textit{reharsal} o di replay$^{\cite{DBLP:journals/corr/Lopez-PazR17},\cite{rolnick2019experience}}$. Queste tecniche consistono nel mantenere in memoria, all'interno di buffer, degli esempi della conoscenza passata selezionati secondo qualche politica. Durante le fasi di addestramento successive, ai nuovi dati vengono intervallati gli esempi mantenuti in memoria, così da consentire al modello di "ricordare" la conoscenza passata e mantenerla, mitigando così il \textit{catastrophic forgetting}.\\\\
@@ -47,38 +127,22 @@ In letteratura esistono diverse architetture di reti neurali ricorrenti, ma molt
 LSTM e GRU hanno meccanismi interni, chiamati \textit{gates} o cancelli, che regolano il flusso delle informazioni. Attraverso questi \textit{gate}, le unità apprendono quali dati sono importanti all'interno della sequenza e quali si possono ignorare, lasciando così al resto della rete solamente le informazioni che ritiene essere rilevanti per fare predizioni.\\\\
 In una LSTM, i dati passano attraverso il \textit{forget gate}, che decide immediatamente quali informazioni è utile mantenere e quali ignorare. Dopodiché i dati passano attraverso l'\textit{input gate} assieme allo stato precedente dell'unità, che decide quali valori dello stato interno conviene aggiornare, e queste informazioni sono poi usate per aggiornare lo stato dell'unità. Infine, attraverso l'\textit{output gate} viene calcolato il nuovo stato interno dell'unità, che servirà all'input successivo.\\\\
 Nelle GRU abbiamo un comportamento simile, ma la struttura dell'unità è semplificata. I dati passano subito attraverso il \textit{update gate}, che si comporta in modo simile ai \textit{gate} \textit{forget} e \textit{input} dell'LSTM, decidendo quali informazioni ignorare e quali mantenere. Dopodiché si attraversa il \textit{reset gate}, che decide cosa mantenere delle informazioni precedententemente analizzate. Avendo una struttura più semplificata, la GRU sono solitamente più veloci delle LSTM.
-\pagebreak
-\subsection{Software e hardware}
+\subsection{Software e Hardware}
 Negli ultimi anni sono nate diverse librerie software che consentono di realizzare modelli di machine learning performanti in breve tempo dei tipi più disparati, da semplici modelli lineari a reti neurali profonde convolutive e oltre.\\
 Librerie open source come PyTorch, Tensorflow$^{\cite{abadi2016tensorflow}}$ e Keras, ma anche librerie proprietarie come Apple Core ML, IBM Watson e MATLAB Deep Learning Toolbox, hanno aperto le porte del machine learning a chiunque sia disposto a studiarle. Alcune librerie, come in particolare TensorFlow 2.0, possiedono API estremamente semplici che consentono di eseguire il preprocessing dei dataset, strutturare una rete neurale, addestrarla e valutarla con una manciata di righe di codice, e nonostante la semplicità essa consente comunque di mettere mano e andare a personalizzare ogni minimo aspetto di tutte le fasi, dal preprocessing al training. In letteratura sono disponibili anche moltissimi testi che consentono di approcciarsi facilmente al machine learning$^{\cite{chollet},\cite{geron}}$.\\\\
 Anche a livello hardware gli ultimi anni hanno portato enormi sviluppi, grazie soprattutto all'industria videoludica e alle criptovalute che hanno spinto la ricerca e lo sviluppo di processori specializzati in calcolo parallelo e matriciale. Questi dispositivi, denominati \textit{Graphics Processing Unit} o GPU, consentono di ridurre esponenzialmente i tempi di addestramento delle reti neurali, abbassando ancora di più i requisiti per accedere a questo campo di studi e consentendo l'esecuzione di modelli di machine learning anche su un comune computer casalingo.\\
 Inoltre, aziende come Google hanno sviluppato hardware realizzato ad hoc per le computazioni necessarie alle reti neurali, incrementando così ulteriormente la velocità e l'efficienza di questi modelli. Nel caso di Google, questo hardware è chiamato \textit{Tensor Processing Unit} o TPU.
-
-\section{Scopo del lavoro}  % ugly title
-\subsection{Applicazioni future}
-Alla luce degli attuali studi nell'ampio campo che è il machine learning, e in particolare riguardanti il continual learning e lo HSM, diventa chiaro come il futuro richiederà sempre più responsività ai sistemi predittivi e un sempre maggior grado di adattamento allo stato psico-fisico del momento dell'utente. Questa necessità di continua evoluzione ben si sposa con le caratteristiche del continual learning, e possibili applicazioni di questa sinergia continual learning -- HSM si possono individuare in diversi contesti, tra cui ad esempio:
 \pagebreak
+\section{Scopo del Lavoro}
+\subsection{Applicazioni Future}
+Alla luce degli attuali studi nell'ampio campo che è il machine learning, e in particolare riguardanti il continual learning e lo HSM, diventa chiaro come il futuro richiederà sempre più responsività ai sistemi predittivi e un sempre maggior grado di adattamento allo stato psico-fisico del momento dell'utente. Questa necessità di continua evoluzione ben si sposa con le caratteristiche del continual learning, e possibili applicazioni di questa sinergia continual learning -- HSM si possono individuare in diversi contesti, tra cui ad esempio:
 \begin{itemize}
     \item[-] \textbf{Guida autonoma}.\\La crescente industria dei veicoli a guida autonoma ha portato ad uno sviluppo in moltissimi campi del machine learning$^{\cite{huang2020autonomous}}$, in particolare nel campo dell'\textit{object recognition}$^{\cite{Carranza_Garc_a_2021}}$, del \textit{behavioral planning}$^{\cite{6856582}}$ e altri ancora. L'\textit{autonomous driving} negli ultimi anni è, senza dubbio, uno dei motori principali nello sviluppo della disciplina del machine learning.\\
     Un veicolo a guida autonoma che sappia adattarsi allo stato psico-fisico attuale del conducente può portare a grossi benefici: ad esempio, essere in grado di modificare il proprio andamento per accomodare uno stato di malessere mitigando così il rischio di incidenti, o poter proporre tappe durante il percorso a seconda della condizione dei passeggeri portando così a più piacevole utilizzo del sistema da parte degli utenti.
     \item[-] \textbf{Intrattenimento}.\\L'industria dell'intrattenimento si è sempre interessata alle nuove tecnologie, puntando alla novità del momento in modo da raggiungere un pubblico sempre più ampio: ad esempio, la tecnologia degli schermi 3D o della realtà virtuale.\\
     Un sistema adattivo di riconoscimento dello stato psico-fisico dello spettatore o del videogiocatore può portare a esperienze multimediali più realistici e responsivi, che ad esempio possano adattare la propria narrazione o l'atmosfera proposta all'utente in maniera da sfruttare, o alleviare, eventuali emozioni che nascono nello spettatore.
-    \item[-] % TODO altri esempi: interfacce che si modulano in base allo stato mentale del momento?
+    %\item[-] TODO altri esempi: interfacce che si modulano in base allo stato mentale del momento?
 \end{itemize}
 Tutti questi ambiti, per poter avere risultati ottimi, devono essere in grado di adattarsi e specializzarsi nel riconoscere lo stato psico-fisico del singolo utente: il conducente proprietario del veicolo, il videogiocatore che possiede la console\ldots ottenendo così sistemi calibrati e personalizzati in base alle caratteristiche e alle esigenze del singolo utente.\\\\
 Questa sinergia risulta ancora poco studiata in letteratura, quindi può essere utile mettere sotto esame alcune tecniche di continual learning attualmente studiate per giudicare la loro applicabilità o meno in contesti di \textit{human state monitoring}, così da concludere se siano necessari ulteriori sforzi in questa direzione per poter realizzare, in futuro, sistemi sempre più integrati con l'uomo e interfacce uomo-macchina sempre più intuitive e adattive. Valutare fin da subito l'applicabilità di questa sinergia è fondamentale in un campo di studi che si muove così in fretta come quello del machine learning.
-\pagebreak
-\subsection{Obiettivi} % \/ ricerca? studio?
-Gli obiettivi di questo progetto sono i seguenti:
-\begin{itemize}
-    \item[-] \textbf{Individuare dataset contenenti dati realitivi allo \textit{human state monitoring}}\\
-    Per poter valutare la sinergia tra continual learning e \textit{human state monitoring}, inanzitutto si rende necessaria la raccolta di dati riguardanti lo HSM. Ne sono stati individuati due, scelti per le caratteristiche che verranno discusse in seguito: WESAD$^{\cite{10.1145/3242969.3242985}}$ e ASCERTAIN$^{\cite{7736040}}$.
-    \item[-] \textbf{Selezionare le metriche e le informazioni utili alla comparazione dei vari approcci}\\
-    Comparare i vari approcci significa avere a disposizione per ognuno di essi delle metriche che vadano a misurare i loro vari aspetti, come il tempo necessario all'addestramento, l'accuratezza raggiunta, la conoscenza trasferita e l'impatto a livello di memoria.
-    \item[-] \textbf{Scegliere una \textit{baseline}}\\
-    Cioè un approccio base da cui partire e che sia utile a confrontare tutti gli altri. Come sarà specificato in seguito, l'approccio scelto come baseline sarà quello \textit{offline}: ciò consiste nell'addestramento di una rete neurale usando l'intero training set a disposizione senza usare approcci continual.
-    \item[-] \textbf{Raccogliere i dati necessari}\\
-    Si rende necessario individuare un ambiente su cui poter eseguire le computazioni necessarie all'addestramento, trovare le API e i linguaggi di programmazione adatti allo scopo e produrre del codice verificabile e degli esperimenti replicabili.
-    \item[-] \textbf{Confrontare i risultati e trarre le conclusioni}\\
-    Una volta raccolti tutti i dati necessari, essi verranno confrontati per poter finalmente valutare la sinergia fra continual learning e human state monitoring.
-\end{itemize}
+
