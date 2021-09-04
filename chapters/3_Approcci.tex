@@ -75,9 +75,9 @@ La metodologia offline quindi avviene seguendo il seguente pseudo-algoritmo, app
     I risultati sono poi proiettati in output sul terminale:
     \lstinputlisting[style=myPython, firstnumber=70, firstline=70, lastline=73]{code/wesad_totaltrain.py}
 \end{enumerate}
-La metodologia offline, come visto, è immediata e grazie alle API di TensorFlow anche semplice da implementare. Essa è stata utilizzata per poter selezionare la rete neurale usata per il dataset relativo, una per WESAD e una per ASCERTAIN, su ciascun esperimento, in base all'accuratezza finale raggiunta.
+La metodologia offline, come visto, è immediata e grazie alle API di TensorFlow anche semplice da implementare. Essa è stata utilizzata per poter selezionare la rete neurale usata per il dataset relativo, una per WESAD e una per ASCERTAIN e che è poi stata usata su ciascun esperimento, in base all'accuratezza finale raggiunta.
 
-\section{Approcci di Apprendimento Continuo}
+\section{Metodologie di Apprendimento Continuo}
 Al centro di questo progetto ci sono le metodologie di continual learning. Ne sono state selezionate alcune: 3 tecniche di replay e 2 tecniche che non sfruttano esempi già visti.\\\\
 Per realizzare il flusso di dati necessario a implementare una strategia di continual learning, le quali richiedono che i dati di addestramento non siano subito tutti disponibili ma che lo diventino nel tempo, i soggetti di entrambi i dataset sono stati divisi a coppie e sottoposti all'addestramento della rete neurale una coppia per volta. Le tabelle \ref{tab:coppiewesad} e \ref{tab:coppieascertain} mostrano la suddivisione a coppie rispettivamente per il dataset WESAD e il dataset ASCERTAIN.
 \begin{table}[h]
@@ -93,8 +93,6 @@ Per realizzare il flusso di dati necessario a implementare una strategia di cont
     		     5 & S10, S11 \\
     		     6 & S13, S14 \\
     		     7 & S15, S16 \\
-    		     \hline
-    		     Sessioni di addestramento & 7
     		\end{tabular}
     		\caption{Suddivisione a coppie del dataset WESAD}
     		\label{tab:coppiewesad}
@@ -113,8 +111,6 @@ Per realizzare il flusso di dati necessario a implementare una strategia di cont
     		     6 & S10, S11 \\
     		     7 & S12, S13 \\
     		     8 & S14, S15 \\
-    		     \hline
-    		     Sessioni di addestramento & 8
     		\end{tabular}
     		\caption{Suddivisione a coppie del dataset ASCERTAIN}
     		\label{tab:coppieascertain}
@@ -157,7 +153,7 @@ A fine sessione di addestramento, si trattiene la percentuale di replay (nell'es
 Con questa metodologia, si intende mantenere di volta in volta l'intero training set. Così facendo, con l'ultima coppia di soggetti si avrà un training set pari al training set usato nella metodologia offline, contenendo tutti i dati di tutti i precedenti soggetti, con la differenza che si addestra una rete neurale che è stata già addestrata su tutte le coppie presenti nel training set ad eccezione dell'ultima arrivata. Questa metodologia può essere considerata una versione particolare della metodoglia di replay precedente: abbiamo un replay del 100\% dei dati, così che tra una sessione di addestramento e l'altra si mantiene l'intero training set utilizzato.\\\\
 Viene realizzato nel seguente modo: la prima sessione di addestramento è realizzata sulla prima coppia di soggetti partendo da pesi casuali della rete neurale, mentre mano a mano che arrivano le coppie successive esse vengono concatenate al training set della sessione precedente e la rete è addestrata senza reinizializzare i pesi, cioè mantenendo l'addestramento precedente. Una problematica da tenere in considerazione è la memoria necessaria richiesta per mantenere i training set nella loro totalità: durante l'ultima sessione di addestramento avremo un training set corrispondente al training set usato nella metodologia offline, di conseguenza mantenere in memoria tutti i dati necessari potrebbe non essere praticabile in contesti reali.
 \subsection{Episodic}  % si mantengono di volta in volta m esempi per ogni classe tratti dal training set
-Nelle precedenti tecniche di replay si mantenevano tutti i dati o un sottoinsieme scelto casualmente del training set. Con questa tecnica, invece, viene mantenuto di sessione in sessione un numero fisso $m$ di esempi per ogni etichetta, così da avere un replay bilanciato rispetto alle classi. L'idea dietro questa tecnica di replayè descritta nello studio "Gradient Episodic Memory for Continuum Learning"$^{\cite{DBLP:journals/corr/Lopez-PazR17}}$.\\\\
+Nelle precedenti tecniche di replay si mantenevano tutti i dati o un sottoinsieme scelto casualmente del training set. Con questa tecnica, invece, viene mantenuto di sessione in sessione un numero fisso $m$ di esempi per ogni etichetta, così da avere un replay bilanciato rispetto alle classi. L'idea dietro questa tecnica di replay è descritta nello studio "Gradient Episodic Memory for Continuum Learning"$^{\cite{DBLP:journals/corr/Lopez-PazR17}}$.\\\\
 Subito prima di avviare l'addestramento, vengono inizializzate le "memorie episodiche" e il parametro $m$, che indica quanti esempi per classe mantenere (nell'esempio, $m = 70$):
 \lstinputlisting[style=myPython, firstnumber=68, firstline=68, lastline=69]{code/wesad_episodic.py}
 Al termine di una sessione di addestramento, il training set appena usato è suddiviso per classi:
