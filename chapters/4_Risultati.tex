@@ -105,7 +105,7 @@ Viene scelto $m = 70$ poiché raggiunge un'accuratezza media superiore e un'acce
 
 % Tabelle e grafici di ogni esperimento, con confronti fra i continual
 \section{Risultati finali}
-\paragraph{WESAD} Usando come modello due layer GRU da 18 unità, su WESAD sono stati ottenuti i seguenti risultati:
+\paragraph{WESAD} Usando come modello una rete neurale con due layer nascosti composti da 18 unità GRU e un layer di output con 4 unità aventi funzione di attivazione \textit{softmax}, su WESAD sono stati ottenuti i seguenti risultati:
 \pagebreak
 \begin{table}[h]
 \footnotesize
@@ -141,7 +141,7 @@ L'esperimento quindi dimostra come l'apprendimento continuo su dati sensoriali c
 	\end{center}
 \end{figure}
 \pagebreak
-\paragraph{ASCERTAIN} Usando come modello due layer GRU da 24 unità, su ASCERTAIN sono stati raggiunti i seguenti risultati:
+\paragraph{ASCERTAIN} Usando come modello una rete neurale con due layer nascosti composti da 24 unità GRU e un layer di output con 4 unità aventi funzione di attivazione \textit{softmax}, su ASCERTAIN sono stati raggiunti i seguenti risultati:
 \begin{table}[h]
 \footnotesize
     \begin{tabular}{l|c|c|c|c|c|c|c}
@@ -170,7 +170,7 @@ Dalle metodologia offline è subito chiaro come il dataset ASCERTAIN presenti un
 Le metodologie continue sono comunque in linea con i risultati sul precedente dataset, con la performance peggiore ottenuta dal \textit{Learning Without Forgetting} mentre la migliore è ottenuta dalla metodologia cumulativa grazie ad un BWT superiore alla metodologia replay. In molti casi si nota un trasferimento negativo di conoscenza all'indietro, sintomo di un lieve caso di \textit{catastrophic forgetting}.\\\\
 Per poter dimostrare l'impatto dovuto allo sbilanciamento delle classi, il dataset ASCERTAIN è stato riorganizzato in soggetti "fittizi" come esposto di seguito.
 \paragraph{Custom ASCERTAIN} Dopo aver eseguito il preprocessing specificato precedentemente, tutti i dati di addestramento sono stati uniti in un unico insieme. Da questo insieme è stato estratto il test set, e il rimanente training set è stato suddiviso in 17 soggetti bilanciati da 108 sequenze di 160 punti ciascuno.\\
-Usando come modello due layer GRU da 24 unità, su ASCERTAIN con i soggetti fittizi sono stati registrati i seguenti risultati:
+Usando come modello una rete neurale con due layer nascosti composti da 24 unità GRU e un layer di output con 4 unità aventi funzione di attivazione \textit{softmax}, su ASCERTAIN con i soggetti fittizi sono stati registrati i seguenti risultati:
 \begin{table}[h]
 \footnotesize
     \begin{tabular}{l|c|c|c|c|c|c|c}
