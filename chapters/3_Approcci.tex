@@ -1,10 +1,10 @@
 \chapter{Metodologie}
-In questa sezione verranno delineati nei dettagli le varie metodologie scelte per la realizzazione della comparazione fra alcune strategie di continual learning triviali applicate ai dataset di Human State Monitoring presentati nel precedente capitolo.
+In questo capitolo verranno delineati nei dettagli le varie metodologie scelte per la realizzazione della comparazione fra alcune strategie di continual learning triviali applicate ai dataset di Human State Monitoring presentati nel precedente capitolo.
 
 \section{Metriche}
-Per poter confrontare fra loro le diverse strategie, fin da subito è apparsa chiara la necessità di metriche che misurassero precisamente alcune caratteristiche fondamentali delle metodologia di continual learning: in particolare, l'accuratezza sul test set, l'accuratezza media sulle classi e i \textit{forward} e \textit{backward transfer} per poter misurare l'impatto della nuova conoscenza sulla precedente e su quella da acquisire.
+Per poter confrontare fra loro le diverse strategie, fin da subito è apparsa chiara la necessità di metriche che misurassero precisamente alcune caratteristiche fondamentali delle metodologie di continual learning: in particolare, l'accuratezza sul test set, l'accuratezza media sulle classi e i \textit{forward} e \textit{backward transfer} per poter misurare l'impatto della nuova conoscenza sulla precedente e su quella da acquisire.
 \subsection{Accuratezza}
-Con "accuratezza" si intende la misura della percentuale di previsioni corrette che modello di machine learning ottiene su un test set, cioè un insieme di dati a cui il modello non è ancora stato esposto.\\
+Con "accuratezza" si intende la misura della percentuale di previsioni corrette che il modello di machine learning ottiene su un test set, cioè un insieme di dati a cui il modello non è stato esposto durante le sessioni di addestramento.\\
 Per poter misurare l'accuratezza su un insieme di dati, l'API di TensorFlow mette a disposizione un comando che valuta un modello di machine learning applicato ai dati passati come parametro:
 \begin{lstlisting}[style = myPython]
 model.evaluate(Xtest, ytest)
@@ -20,7 +20,7 @@ model.evaluate(Xtest, ytest)[1]
 otteniamo la misura dell'accuratezza che il modello \texttt{model} ottiene sul test set composto dai dati \texttt{Xtest} e dalle label \texttt{ytest}.\\\\
 La misura di accuratezza indicata nei risultati è l'accuratezza media ottenuta dal modello durante le varie sessioni di addestramento.
 \subsection{ACC, FWT e BWT}
-Queste tre metriche sono state tratte e adattate dalla pubblicazione \textit{Gradient Episodic Memory for Continual Learning}$^{\cite{DBLP:journals/corr/Lopez-PazR17}}$, e si basano sulla costruzione di una matrice $R \in \mathbb{R}^{E\times T}$. Con $T$ si indica il numero di classi del problema in esame, e ogni volta che il modello finisce una sessione di addestramento tra le $E$ che vengono eseguite si va a valutare la sua \textit{test performance} su tutte le $T$ classi. Così facendo, su calcolano le $R_{i,j}\in R$ valutazioni dell'accuratezza del test di classificazione del modello sulla classe $t_j$ dopo aver osservato gli esempi della $i$-esima sessione di addestramento. Inoltre, una volta creato il modello con una inizializzazione dei pesi casuale si calcola $\overline{b}$, valutazione delle accuratezza nei test sui vari task.\\
+Queste tre metriche sono state tratte e adattate dalla pubblicazione \textit{Gradient Episodic Memory for Continual Learning}$^{\cite{DBLP:journals/corr/Lopez-PazR17}}$, e si basano sulla costruzione di una matrice $R \in \mathbb{R}^{E\times T}$. Con $T$ si indica il numero di classi del problema in esame, e ogni volta che il modello finisce una sessione di addestramento tra le $E$ che vengono eseguite si va a valutare la sua \textit{test performance} su tutte le $T$ classi. Così facendo, si calcolano le $R_{i,j}\in R$ valutazioni dell'accuratezza del test di classificazione del modello sulla classe $t_j$ dopo aver osservato gli esempi della $i$-esima sessione di addestramento. Inoltre, una volta creato il modello con una inizializzazione dei pesi casuale si calcola $\overline{b}$, valutazione delle accuratezza nei test sui vari task.\\
 Possiamo ora definire le tre metriche:
 \begin{itemize}
     \item[-] \textbf{ACC}, \textit{Accuracy} o accuratezza
@@ -33,7 +33,7 @@ Possiamo ora definire le tre metriche:
             BWT = \frac{1}{T-1}\cdot\sum_{i=1}^T\left(\frac{1}{E}\sum_{j=1}^E R_{E,i} - R_{j,i}\right)
         \end{equation}
     Valuta l'influenza che ha una sessione di apprendimento sulle precedenti, valutando l'impatto che ha avuto sulle valutazioni dell'accuratezza in fase di test. Si ha un BWT positivo quando una sessione di addestramento migliora l'accuratezza delle precedenti già valutate, mentre un valore negativo indica che la sessione di addestramento ha deteriorato l'accuratezza che si otteneva grazie alla precedente conoscenza. Non è significativo parlare di BWT durante la prima sessione di addestramento.\\
-    Un BWT fortemente negativo si ha nello scenario del \textit{catastrophic forgetting}.
+    Un BWT fortemente negativo evidenzia il verificarsi del fenomeno del \textit{catastrophic forgetting}.
     \item[-] \textbf{FWT}, \textit{Forward Transfer} o trasferimento in avanti
         \begin{equation}\label{eq:fun_fwt}
             FWT = \frac{1}{T-1}\cdot\sum_{i=1}^T\left(\frac{1}{E}\sum_{j=1}^E R_{j,i} - \overline{b}_i\right)
@@ -49,7 +49,7 @@ Le altre metriche raccolte durante gli esperimenti sono le seguenti:
     \item[-] \textbf{Numero di epoche} medio, e deviazione standard\\
     Questa misurazione fornisce una indicazione sul tempo di convergenza delle reti neurali selezionate sui dati, così da poter stimare le loro prestazioni su hardware diversi da quello di test.
     \item[-] \textbf{Tempo di addestramento} medio, e deviazione standard\\
-    Gli esperimenti sono eseguiti su un comune computer casalingo, sfruttando le ottimizzazioni messe a disposizione dall'utilizzo di una GPU per i calcoli. Nello specifico, le computazioni sono state eseguite su una macchina che montava una GPU nVidia GeForce GTX 1070.\\% CUDA 10.1 https://ai-benchmark.com/ranking_deeplearning.html
+    Gli esperimenti sono eseguiti su un personal computer comune, sfruttando le ottimizzazioni messe a disposizione dall'utilizzo di una GPU per i calcoli. Nello specifico, le computazioni sono state eseguite su una macchina che montava una GPU nVidia GeForce GTX 1070 con 6 Gb di memoria dedicata, una CPU Intel i5 3570 e 12 Gb di RAM.\\% CUDA 10.1 https://ai-benchmark.com/ranking_deeplearning.html
     Il tempo di addestramento è calcolato come la media dei tempi impiegati delle varie sessioni di addestramento.
     \item[-] \textbf{Quantità di memoria} media\\
     Metrica utile per valutare l'impatto sulla memoria del sistema che andrà poi a utilizzare il modello addestrato. Un elevato consumo di memoria può portare alla esclusione di dispositivi portatili o con specifiche particolari.
@@ -93,6 +93,7 @@ Per realizzare il flusso di dati necessario a implementare una strategia di cont
     		     5 & S10, S11 \\
     		     6 & S13, S14 \\
     		     7 & S15, S16 \\
+    		     \multicolumn{1}{c}{}
     		\end{tabular}
     		\caption{Suddivisione a coppie del dataset WESAD}
     		\label{tab:coppiewesad}
@@ -139,7 +140,7 @@ Ogni coppia è caricata, concatenata, per formare il training set della sessione
 \lstinputlisting[style=myPython, firstnumber=83, firstline=83, lastline=83]{code/wesad_continualtrain.py}
 Infine il modello è addestrato sul training set e validato sul validation set appena prodotti, sono calcolate le metriche ed esposte in output.
 \subsection{Replay}  % una percentuale, di solito 25%
-Questa è la prima tecnica di replay provata, ed anche la più semplice. Questa metodologia consiste nel mantenere una percentuale del training set utilizzato per addestrare la rete neurale durante l'attuale sessione di addestramento e usarla insieme al training set, cioè alla coppia di soggetti, della sessione di addestramento successiva. Anche questa metodologia è di facile implementazione e la sua filosofia è trattata in studi come "Experience Replay for Continual Learning"$^{\cite{rolnick2019experience}}$.\\\\
+Questa è la prima tecnica di replay provata, ed anche la più semplice. Questa metodologia consiste nel mantenere una percentuale del training set utilizzato per addestrare la rete neurale durante l'attuale sessione di addestramento e usarla insieme al training set, cioè alla coppia di soggetti, della sessione di addestramento successiva. Anche questa metodologia è di facile implementazione e la sua filosofia è trattata in studi come \cite{rolnick2019experience}.\\\\
 \pagebreak
 
 Subito prima di avviare l'addestramento, vengono inizializzate le due variabili che conterranno il training set:
@@ -150,7 +151,7 @@ A fine sessione di addestramento, si trattiene la percentuale di replay (nell'es
 \lstinputlisting[style=myPython, firstnumber=100, firstline=100, lastline=100]{code/wesad_continualreplaytrain.py}
 
 \subsection{Cumulative}  % si mantengono gli esempi precedenti nei successivi addestramenti, così all'arrivo dell'ultima coppia di soggetti il training set è uguale al caso offline
-Con questa metodologia, si intende mantenere di volta in volta l'intero training set. Così facendo, con l'ultima coppia di soggetti si avrà un training set pari al training set usato nella metodologia offline, contenendo tutti i dati di tutti i precedenti soggetti, con la differenza che si addestra una rete neurale che è stata già addestrata su tutte le coppie presenti nel training set ad eccezione dell'ultima arrivata. Questa metodologia può essere considerata una versione particolare della metodoglia di replay precedente: abbiamo un replay del 100\% dei dati, così che tra una sessione di addestramento e l'altra si mantiene l'intero training set utilizzato.\\\\
+Con questa metodologia, si intende mantenere di volta in volta l'intero training set accumulando le coppie di soggetti. Così facendo, all'arrivo dell'ultima coppia di soggetti si avrà un training set pari al training set usato nella metodologia offline, contenendo tutti i dati di tutti i precedenti soggetti, con la differenza che si addestra una rete neurale che è stata già addestrata su tutte le coppie presenti nel training set ad eccezione dell'ultima arrivata. Questa metodologia può essere considerata una versione particolare della metodoglia di replay precedente: abbiamo un replay del 100\% dei dati, così che tra una sessione di addestramento e l'altra si mantiene l'intero training set utilizzato.\\\\
 Viene realizzato nel seguente modo: la prima sessione di addestramento è realizzata sulla prima coppia di soggetti partendo da pesi casuali della rete neurale, mentre mano a mano che arrivano le coppie successive esse vengono concatenate al training set della sessione precedente e la rete è addestrata senza reinizializzare i pesi, cioè mantenendo l'addestramento precedente. Una problematica da tenere in considerazione è la memoria necessaria richiesta per mantenere i training set nella loro totalità: durante l'ultima sessione di addestramento avremo un training set corrispondente al training set usato nella metodologia offline, di conseguenza mantenere in memoria tutti i dati necessari potrebbe non essere praticabile in contesti reali.
 \subsection{Episodic}  % si mantengono di volta in volta m esempi per ogni classe tratti dal training set
 Nelle precedenti tecniche di replay si mantenevano tutti i dati o un sottoinsieme scelto casualmente del training set. Con questa tecnica, invece, viene mantenuto di sessione in sessione un numero fisso $m$ di esempi per ogni etichetta, così da avere un replay bilanciato rispetto alle classi. L'idea dietro questa tecnica di replay è descritta nello studio "Gradient Episodic Memory for Continuum Learning"$^{\cite{DBLP:journals/corr/Lopez-PazR17}}$.\\\\

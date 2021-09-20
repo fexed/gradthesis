@@ -1,7 +1,8 @@
-\chapter{Risultati}
+\chapter{Valutazione Empirica}
+In questo capitolo verranno discussi nel dettaglio gli esperimenti realizzati nell'ambito di questa tesi. Inoltre verranno esposte le scelte adoperate nella selezione e realizzazione degli esperimenti e nella raccolta dei risultati.
 \section{Esperimenti}
 \subsection{Panoramica} 
-Gli esperimenti sono stati eseguiti su un comune personal computer, montante come sistema operativo Windows 10 in versione developer build 21390.2025 e all'interno della Windows Subsystem for Linux, con supporto alla GPU.\\\\% Specificare hardware?
+Gli esperimenti sono stati eseguiti su un personal computer montante come sistema operativo Windows 10 in versione developer build 21390.2025 e all'interno della Windows Subsystem for Linux, con supporto alla GPU.\\\\% Specificare hardware?
 Le \textit{callback} utilizzate durante le sessioni di addestramento sono state le seguenti:
 \begin{itemize}
     \item[-] \textit{TensorBoard}, per poter visualizzare in tempo reale l'andamento dell'addestramento delle varie reti.
@@ -78,11 +79,9 @@ La percentuale di dati da ripetere nella sessione di addestramento successiva, s
         \label{tab:replayperctest}
     \end{center}
 \end{table}
-La scelta è ricaduta sul 25\% di replay poiché le metriche misurate sono mediamente più alte delle altre percentuali, in particolare nel trasferimento di conoscenza. La scelta è anche influenzata dall'utilizzo di memoria, e un valore maggiore porta a modelli migliori pur usando più memoria durante l'addestramento.
-% TODO grafico?
-\pagebreak
-\subsection{Valore di $m$}
-Per quanto riguarda lo scenario episodic, l'iperparametro $m$ è stato scelto provando diversi valori sulla base dell'accuratezza e delle altre metriche misurate nell'episodic training su dataset WESAD, ottenendo i risultati elencati nella tabella \ref{tab:episodicmtest}\\\\
+La scelta è ricaduta sul 25\% di replay poiché le metriche misurate sono mediamente più alte delle altre percentuali, in particolare nel trasferimento di conoscenza. Inoltre, dalle prove effettuate, l'incremento dell'accuratezza derivato dall'aumentare la percentuale di replay è risultato irrisorio. La scelta è stata ulteriormente influenzata dall'utilizzo di memoria, e un valore maggiore porta a modelli migliori pur usando più memoria durante l'addestramento.
+\subsection{Numero di esempi nelle memorie episodiche}
+Per quanto riguarda lo scenario episodic, l'iperparametro $m$ indica il numero di esempi per ogni classe che vengono mantenuti fra una sessione di addestramento e l'altra. Tale iperparametro è stato scelto provando diversi valori sulla base dell'accuratezza e delle altre metriche misurate nell'episodic training su dataset WESAD, ottenendo i risultati elencati nella tabella \ref{tab:episodicmtest}\\\\
 \begin{table}[h]
     \begin{center}
         \begin{tabular}{l|c|c|c|c}
@@ -222,12 +221,14 @@ Dai risultati ottenuti e elencati nelle tabelle \ref{tab:reswesad}, \ref{tab:res
         \textbf{WESAD} & 49,14$\pm$33,67 & 947,24s & 73,13$\pm$4,02 & 0,7721 & 0,0343 & 0,5397 & 2173 Mb\\
         \textbf{ASCERTAIN} & 10,88$\pm$5,01 & 249,28s & 37,45$\pm$5,01 & 0,25 & -0,0168 & 0,0213 & 2154,36 Mb\\
         \textbf{Cust. ASC.} & 7,75$\pm$5,33 & 226,24s & 87,01$\pm$0,64 & 0,2481 & -0,0241 & 0,0052 & 2143,71 Mb\\
+        \hline
+        Media & 22,59 & 474,25s & 65,86 & 0,4234 & -0,0022 & 0,1887 & 2157,02 Mb
     \end{tabular}
     \caption{Risultati delle metodologia naive}
     \label{tab:rescontinual}
 \end{table}
 
-La metodologia continuativa più semplice ottiene sui dataset risultati sempre comparabili alla metodologia offline utilizzata come baseline. Come elencato in tabella \ref{tab:rescontinual}, la metodologia continual su dataset WESAD ottiene un'accuratezza media del 73.13\%, da confrontare con la metodologia offline con un'accuratezza del 99.07\%. Questo primo risultato porta ad una considerazione: su dataset come WESAD, cioè contenenti dati "facili", già solo la metodologia continuativa più triviale ottiene risultati non ottimi ma comunque buoni, anche dimostrato dalla metrica BWT di 0,0343 e dall'FWT di 0,5397 che indicano un buon trasferimento della conoscenza.\\
+La metodologia continuativa più semplice ottiene sui dataset risultati sempre comparabili alla metodologia offline utilizzata come baseline. Come elencato in tabella \ref{tab:rescontinual}, la metodologia continual su dataset WESAD ottiene un'accuratezza media del 73.13\%, da confrontare con la metodologia offline con un'accuratezza del 99.07\%. Questo primo risultato porta ad una considerazione: su dataset come WESAD, contente dati ben bilanciati nelle classi, già solo la metodologia continuativa più triviale ottiene risultati non ottimi ma comunque buoni, anche dimostrato dalla metrica BWT di 0,0343 e dall'FWT di 0,5397 che indicano un buon trasferimento della conoscenza.\\
 ASCERTAIN d'altro canto ottiene solo un risultato del 42.78\% offline, ma anche qua la metodologia continual ottiene un paragonabile 37.45\% di accuratezza media, nonostante l'accuratezza finale solo del 25\% (che su quattro classi da inferire è equivalente al tirare a indovinare). ASCERTAIN con i soggetti fittizi, invece, ottiene un 87.01\% di accuratezza sulla metodologia continual a fronte dell'87.77\% ottenuto dalla metodologia offline, dimostrando l'importanza delle classi bilanciate, ma ottenendo solo il 24.81\% di accuratezza finale.
 
 \begin{table}[h]
@@ -238,6 +239,8 @@ ASCERTAIN d'altro canto ottiene solo un risultato del 42.78\% offline, ma anche 
         \textbf{WESAD} & 39,71$\pm$19,91 & 2786s & 81,97$\pm$8,67 & 0,961 & 0,1383 & 0,4674 & 2291,45 Mb\\
         \textbf{ASCERTAIN} & 9,25$\pm$6,81 & 932,56s & 39,06$\pm$4,26 & 0,2697 & 0,0064 & 0,0278 & 2297,17 Mb\\
         \textbf{Cust. ASC.} & 7,25$\pm$8,80 & 872,8s & 87,66$\pm$0,16 & 0,2773 & 0,0032 & 0,0801 & 2273,07 Mb\\
+        \hline
+        Media & 18,74 & 1530,45s & 69,56 & 0,5027 & 0,0493 & 0,1918 & 2287,23 Mb
     \end{tabular}
     \caption{Risultati della metodologia cumulative}
     \label{tab:rescumulative}
@@ -255,6 +258,8 @@ Il dataset ASCERTAIN evidenzia ancora una volta la propria difficoltà, con un'a
         \textbf{WESAD} & 41,14$\pm$21,19 & 1063,51s & 78,29$\pm$3,32 & 0,7849 & -0,002 & 0,4582 & 2184,77 Mb\\
         \textbf{ASCERTAIN} & 13,25$\pm$10,03 & 402,96s & 39,48$\pm$4,37 & 0,2603 & -0,014 & 0,0485 & 2173,95 Mb\\
         \textbf{Cust. ASC.} & 12,125$\pm$12,94 & 299,52s & 87,13$\pm$0,75 & 0,2711 & -0,0012 & 0,306 & 2146,35 Mb\\
+        \hline
+        Media & 22,17 & 588,66s & 68,30 & 0,4388 & -0,0057 & 0,2709 & 2168,36 Mb
     \end{tabular}
     \caption{Risultati della metodologia con il 25\% di replay}
     \label{tab:resreplay}
@@ -274,6 +279,8 @@ ASCERTAIN ha un comportamento simile: la metodologia che usa il il 25\% di repla
         \textbf{WESAD} & 35$\pm$26,26 & 1088,29s & 82,13$\pm$6,60 & 0,9095 & 0,0841 & 0,4226 & 2097,47 Mb\\
         \textbf{ASCERTAIN} & 12,62$\pm$7,94 & 498,24s & 38,80$\pm$4,04 & 0,2742 & 0,0048 & 0,0156 & 2231,42 Mb\\
         \textbf{Cust. ASC.} & 5,5$\pm$3,94 & 319,76s & 82,19$\pm$3,95 & 0,339 & 0,0346 & 0,1043 & 2204,84 Mb\\
+        \hline
+        Media & 17,71 & 635,43s & 67,70 & 0,5076 & 0,0412 & 0,1808 & 2177,91 Mb
     \end{tabular}
     \caption{Risultati della metodologia episodica con $m = 70$}
     \label{tab:resepisodic}
@@ -290,6 +297,8 @@ Sul dataset ASCERTAIN abbiamo una situazione simile: la metodologia cumulativa o
         \textbf{WESAD} & 29,71$\pm$17,38 & 1342,81s & 70,74$\pm$4,74 & 0,7251 & 0,0113 & 0,4698 & 2187,40 Mb\\
         \textbf{ASCERTAIN} & 24,14$\pm$16,94 & 810,96s & 36,08$\pm$5,66 & 0,2497 & -0,0183 & -0,0003 & 2171,62 Mb\\
         \textbf{Cust. ASC.} & 14,38$\pm$7,58 & 541,68s & 87,34$\pm$0,42 & 0,2467 & -0,0191 & 0,0845 & 2146,36 Mb\\
+        \hline
+        Media & 22,74 & 898,48s & 64,72 & 0,4075 & -0,0087 & 0,1847 & 2168,46 Mb
     \end{tabular}
     \caption{Risultati della metodologia EWC}
     \label{tab:resewc}
@@ -305,9 +314,29 @@ Il primo dei due metodi provati che non si basano sui replay, l'Elastic Weight C
         \textbf{WESAD} & 44,29$\pm$18,30 & 3282,51s & 69,09$\pm$5,82 & 0,7419 & 0,0451 & 0,3248 & 2121,31 Mb\\
         \textbf{ASCERTAIN} & 21,62$\pm$10,20 & 879,68s & 35,69$\pm$5,43 & 0,2448 & 0.0327 & 0,0156 & 2103 Mb\\
         \textbf{Cust. ASC.} & 20,75$\pm$8,42 & 771,36s & 86,91$\pm$0,89 & 0,2495 & -0,0333 & -0,146 & 2095,93 Mb\\
+        \hline
+        Media & 28,89 & 1644,52s & 63,90 & 0,4121 & 0,0148 & 0,0648 & 2106,75 Mb
     \end{tabular}
     \caption{Risultati della metodologia LWF}
     \label{tab:reslwf}
 \end{table}
 % LWF
 Learning Without Forgetting, nei risultati in tabella \ref{tab:reslwf}, ha performance comparabili ad EWC. Su WESAD risulta inferiore alla metodologia continual triviale, con 69.09\% di accuratezza media contro il 73.13\% del continual e il 70.75\% dell'EWC. Stesso discorso per ASCERTAIN, dove raggiunge il 35.69\% contro il 37.45\% del continual e il 42.78\% raggiunto dalla metodologia offline, e per ASCERTAIN con soggetti fittizi. Quest'ultimo raggiunge un'accuratezza media inferiore dello 0.1\% rispetto all'addestramento continual triviale.
+
+\begin{table}[h]
+\footnotesize
+    \begin{center}
+        \begin{tabular}{l|c|c|c|c|c|c|c}
+            \textbf{Metodologia} & \textbf{Epoche} & \textbf{Tempo} & \textbf{Acc.} & \textbf{ACC} & \textbf{BWT} & \textbf{FWT} & \textbf{Memoria}\\
+            \hline
+            Naive & 22,59 & 474,25s & 65,86 & 0,4234 & -0,0022 & 0,1887 & 2157,02 Mb\\
+            Cumulative & 18,74 & 1530,45s & 69,56 & 0,5027 & 0,0493 & 0,1918 & 2287,23 Mb\\
+            Replay & 22,17 & 588,66s & 68,30 & 0,4388 & -0,0057 & 0,2709 & 2168,36 Mb\\
+            Episodic & 17,71 & 635,43s & 67,70 & 0,5076 & 0,0412 & 0,1808 & 2177,91 Mb\\
+            EWC & 22,74 & 898,48s & 64,72 & 0,4075 & -0,0087 & 0,1847 & 2168,46 Mb\\
+            LWF & 28,89 & 1644,52s & 63,90 & 0,4121 & 0,0148 & 0,0648 & 2106,75 Mb
+        \end{tabular}
+        \caption{Risultati medi delle varie metodologia}
+        \label{tab:allres_mean}
+    \end{center}
+\end{table}
