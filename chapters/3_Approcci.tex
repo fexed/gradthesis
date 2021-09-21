@@ -1,8 +1,8 @@
 \chapter{Metodologie}
-In questo capitolo verranno delineati nei dettagli le varie metodologie scelte per la realizzazione della comparazione fra alcune strategie di continual learning triviali applicate ai dataset di Human State Monitoring presentati nel precedente capitolo.
+In questo capitolo verranno delineate nel dettaglio le varie metodologie scelte per la realizzazione della comparazione fra alcune strategie di addestramento continuo triviali applicate ai dataset di Human State Monitoring presentati nel precedente capitolo.
 
 \section{Metriche}
-Per poter confrontare fra loro le diverse strategie, fin da subito è apparsa chiara la necessità di metriche che misurassero precisamente alcune caratteristiche fondamentali delle metodologie di continual learning: in particolare, l'accuratezza sul test set, l'accuratezza media sulle classi e i \textit{forward} e \textit{backward transfer} per poter misurare l'impatto della nuova conoscenza sulla precedente e su quella da acquisire.
+Per poter confrontare fra loro le diverse strategie, fin da subito è apparsa chiara la necessità di metriche che misurassero con precisione alcune caratteristiche fondamentali delle metodologie di addestramento continuo, in particolare: l'accuratezza sul test set, l'accuratezza media sulle classi e i \textit{forward} e \textit{backward transfer} per poter misurare l'impatto della nuova conoscenza sulla conoscenza precedentemente appresa e su quella ancora da acquisire.
 \subsection{Accuratezza}
 Con "accuratezza" si intende la misura della percentuale di previsioni corrette che il modello di machine learning ottiene su un test set, cioè un insieme di dati a cui il modello non è stato esposto durante le sessioni di addestramento.\\
 Per poter misurare l'accuratezza su un insieme di dati, l'API di TensorFlow mette a disposizione un comando che valuta un modello di machine learning applicato ai dati passati come parametro:
@@ -17,7 +17,7 @@ otterremo un modello la cui funzione di loss è la cross-entropia categorica, us
 \begin{lstlisting}[style = myPython]
 model.evaluate(Xtest, ytest)[1]
 \end{lstlisting}
-otteniamo la misura dell'accuratezza che il modello \texttt{model} ottiene sul test set composto dai dati \texttt{Xtest} e dalle label \texttt{ytest}.\\\\
+otteniamo la misura dell'accuratezza che il modello \texttt{model} ottiene sul test set composto dai dati \texttt{Xtest} e dalle etichette \texttt{ytest}.\\\\
 La misura di accuratezza indicata nei risultati è l'accuratezza media ottenuta dal modello durante le varie sessioni di addestramento.
 \subsection{ACC, FWT e BWT}
 Queste tre metriche sono state tratte e adattate dalla pubblicazione \textit{Gradient Episodic Memory for Continual Learning}$^{\cite{DBLP:journals/corr/Lopez-PazR17}}$, e si basano sulla costruzione di una matrice $R \in \mathbb{R}^{E\times T}$. Con $T$ si indica il numero di classi del problema in esame, e ogni volta che il modello finisce una sessione di addestramento tra le $E$ che vengono eseguite si va a valutare la sua \textit{test performance} su tutte le $T$ classi. Così facendo, si calcolano le $R_{i,j}\in R$ valutazioni dell'accuratezza del test di classificazione del modello sulla classe $t_j$ dopo aver osservato gli esempi della $i$-esima sessione di addestramento. Inoltre, una volta creato il modello con una inizializzazione dei pesi casuale si calcola $\overline{b}$, valutazione delle accuratezza nei test sui vari task.\\
@@ -56,18 +56,18 @@ Le altre metriche raccolte durante gli esperimenti sono le seguenti:
 \end{itemize}
 
 \section{Baseline: l'addestramento offline}
-Un classico addestramento di un modello di machine learning avviene raccogliendo i dati di training e sottoponendoli al modello tutti in una volta. Questa metodologia è statica e produce un modello che sui futuri dati si comporterà tanto meglio quanto essi saranno simili ai dati di addestramento.\\
-La scelta di usare questa metodologia classica come baseline è stata guidata dal principio che, avendo tutti i dati a disposizione in una sola volta, la rete neurale risultante dovrebbe avere le migliori prestazioni possibili sul test set una volta che viene sottoposto, e quindi fornisce un "limite superiore" all'accuratezza delle metodologie continual. Una strategia di continual learning è tanto migliore quanto più si avvicina alle performance che la stessa rete neurale avrebbe se addestrata su tutti i dati in maniera offline o, se possibile, quando la supera.\\\\
-La metodologia offline quindi avviene seguendo il seguente pseudo-algoritmo, applicabile sia a WESAD che ad ASCERTAIN:
+L'approccio classico all'addestramento di un modello di machine learning avviene raccogliendo i dati di addestramento e sottoponendoli al modello in una singola sessione di addestramento. Questa metodologia è statica e produce un modello che sui futuri dati si comporterà tanto meglio quanto essi saranno simili ai dati di addestramento.\\
+La scelta di usare questa metodologia classica come baseline è stata guidata dal principio che, avendo tutti i dati a disposizione in una sola volta, la rete neurale risultante dovrebbe ottenere le migliori prestazioni possibili sul test set una volta che questo viene sottoposto, e quindi fornisce un "limite superiore" all'accuratezza delle metodologie continue. Una strategia di addestramento continuo è tanto migliore quanto più si avvicina alle performance che la stessa rete neurale otterrebbe se venisse addestrata su tutti i dati in maniera offline o, se possibile, quando la supera.\\\\
+L'addestramento offline è quindi realizzato seguendo il seguente pseudo-algoritmo, applicabile sia a WESAD che ad ASCERTAIN:
 \begin{enumerate}
     \item \textbf{Creare e compilare la rete neurale} che verrà poi addestrata.\\
     La creazione della rete neurale, attraverso la API Sequential di TensorFlow, è analoga per entrambi i dataset a meno della struttura interna. L'esempio seguente è tratto dall'addestramento offline per WESAD, e costruisce una rete neurale con due layer da 18 unità GRU e un layer output da 4 unità, corrispondenti alle 4 classi del dataset.
     \lstinputlisting[style=myPython, firstnumber=22, firstline=22, lastline=30]{code/wesad_totaltrain.py}
     \item \textbf{Caricare il dataset}, composto da training set e test set.\\
-    Come precedentemente spiegato, i dataset sono divisi in training set e test set, e il training set è ulteriormente diviso fra i soggetti dei due studi. In entrambi i casi quindi, per quanto riguarda la metodologia offline, viene caricato il test set così com'è, mentre il training set è caricato concantenando fra loro i dati di tutti i soggetti. Esempio, sempre tratto da WESAD:
+    Come precedentemente spiegato, i dataset sono divisi in training set e test set, e il training set è ulteriormente diviso fra i soggetti dei due studi. In entrambi i casi quindi, per quanto riguarda la metodologia offline, viene caricato il test set così come viene fornito, mentre il training set è realizzato concantenando fra loro i dati di tutti i soggetti. Esempio, sempre tratto da WESAD:
     \lstinputlisting[style=myPython, firstnumber=35, firstline=35, lastline=47]{code/wesad_totaltrain.py}
     \lstinputlisting[style=myPython, firstnumber=51, firstline=51, lastline=52]{code/wesad_totaltrain.py}
-    Il training set è ulteriormente diviso in training set e validation set, utile per verificare l'andamento dell'addestramento e implementare la fermata anticipata dell'addestramento:
+    Il training set è ulteriormente diviso in training set e validation set, utilizzato per monitorare l'andamento dell'addestramento e implementare la fermata anticipata dell'addestramento:
     \lstinputlisting[style=myPython, firstnumber=56, firstline=56, lastline=56]{code/wesad_totaltrain.py}
     \item \textbf{Addestramento} e risultati.\\
     Una volta preparato il dataset, si può dare il via all'addestramento. Prima di esso si preparano, sempre grazie all'API di TensorFlow, le due callback usate durante gli esperimenti: la creazione di grafici attraverso TensorBoard e la fermata anticipata in base all'andamento del valore della funzione di loss sul validation set:
@@ -75,11 +75,11 @@ La metodologia offline quindi avviene seguendo il seguente pseudo-algoritmo, app
     I risultati sono poi proiettati in output sul terminale:
     \lstinputlisting[style=myPython, firstnumber=70, firstline=70, lastline=73]{code/wesad_totaltrain.py}
 \end{enumerate}
-La metodologia offline, come visto, è immediata e grazie alle API di TensorFlow anche semplice da implementare. Essa è stata utilizzata per poter selezionare la rete neurale usata per il dataset relativo, una per WESAD e una per ASCERTAIN e che è poi stata usata su ciascun esperimento, in base all'accuratezza finale raggiunta.
+La metodologia offline, come visto, è immediata e grazie alle API di TensorFlow anche semplice da implementare. Essa è stata utilizzata anche per poter selezionare la rete neurale usata per il dataset relativo, una per WESAD e una per ASCERTAIN e che è poi stata usata su ciascun esperimento, in base all'accuratezza finale raggiunta.
 
-\section{Metodologie di Apprendimento Continuo}
-Al centro di questo progetto ci sono le metodologie di continual learning. Ne sono state selezionate alcune: 3 tecniche di replay e 2 tecniche che non sfruttano esempi già visti.\\\\
-Per realizzare il flusso di dati necessario a implementare una strategia di continual learning, le quali richiedono che i dati di addestramento non siano subito tutti disponibili ma che lo diventino nel tempo, i soggetti di entrambi i dataset sono stati divisi a coppie e sottoposti all'addestramento della rete neurale una coppia per volta. Le tabelle \ref{tab:coppiewesad} e \ref{tab:coppieascertain} mostrano la suddivisione a coppie rispettivamente per il dataset WESAD e il dataset ASCERTAIN.
+\section{Metodologie di Addestramento Continuo}
+Al centro di questo progetto ci sono le metodologie di addestramento continuo. Ne sono state selezionate alcune: 3 tecniche di replay e 2 tecniche che non sfruttano esempi già visti.\\\\
+Per realizzare il flusso di dati necessario a implementare una strategia di addestramento continuo, le quali richiedono che i dati di addestramento non siano subito tutti disponibili ma che lo diventino nel tempo, i soggetti di entrambi i dataset sono stati mantenuti divisi per soggetto e raggruppati a coppie, per poi essere sottoposti all'addestramento della rete neurale una coppia per volta. Le tabelle \ref{tab:coppiewesad} e \ref{tab:coppieascertain} mostrano la suddivisione a coppie rispettivamente per il dataset WESAD e il dataset ASCERTAIN.
 \begin{table}[h]
     \parbox{.45\linewidth}{
     	\begin{center}
@@ -117,42 +117,38 @@ Per realizzare il flusso di dati necessario a implementare una strategia di cont
     		\label{tab:coppieascertain}
     	\end{center}
     }
-\end{table}
-
+\end{table}\\
 Per poter misurare le metriche ACC, BWT e FWT delle metodologie di continual learning, in ogni esperimento viene prima preparato il test set suddividendolo nelle varie classi:
 \lstinputlisting[style=myPython, firstnumber=21, firstline=21, lastline=22]{code/wesad_continualtrain.py}
 \lstinputlisting[style=myPython, firstnumber=24, firstline=24, lastline=44]{code/wesad_continualtrain.py}
-\pagebreak
 Subito dopo, appena viene creato il modello, vengono inizializzate le variabili necessarie e il vettore $\overline{b}$:
 \lstinputlisting[style=myPython, firstnumber=57, firstline=57, lastline=64]{code/wesad_continualtrain.py}
-Al termine di ogni sessione di training, cioè appena concluso l'addestramento su una coppia, vengono calcolati gli $R_{i,j}$:
+Al termine di ogni sessione di addestramento, cioè appena concluso l'addestramento su una coppia, vengono calcolati gli $R_{i,j}$:
 \lstinputlisting[style=myPython, firstnumber=97, firstline=97, lastline=97]{code/wesad_continualtrain.py}
-Infine, al termine del processo di addestramento, vengono calcolate le varie metriche:
+Infine, al termine dell'ultima sessione di addestramento, vengono calcolate le varie metriche:
 \lstinputlisting[style=myPython, firstnumber=99, firstline=99, lastline=118]{code/wesad_continualtrain.py}
 
 \subsection{Naive}
-La prima metodologia continua sperimentata è chiamata \textit{naive}. Questa metodologia consiste nel fornire al modello una coppia alla volta come training set, senza ulteriori meccanismi: la semplicità di questa metodologia la rende molto facile da implementare, ma anche esposta alle problematiche intrinseche dell'apprendimento continuo esposte precedentemente. Questa metodologia è stata descritta in alcuni studi pioneristici nel campio dell'apprendimento continuo, come "CHILD: A First Step Towards Continual Learning"$^{\cite{Ring2004CHILDAF}}$.\\\\
-Nel dettaglio, inizialmente vengono subito stabilite le coppie:
+La prima metodologia continua sperimentata è chiamata \textit{naive}. Questa metodologia consiste nel fornire al modello una coppia alla volta come training set, senza ulteriori elaborazioni: la semplicità di questa metodologia la rende molto facile da implementare, ma anche esposta alle problematiche intrinseche dell'apprendimento continuo esposte precedentemente. Questa metodologia è stata descritta in alcuni studi pioneristici nel campio dell'apprendimento continuo, come \cite{Ring2004CHILDAF}.\\\\
+Nel dettaglio, inizialmente vengono stabilite le coppie:
 \lstinputlisting[style=myPython, firstnumber=66, firstline=66, lastline=66]{code/wesad_continualtrain.py}
-Ogni coppia è caricata, concatenata, per formare il training set della sessione che viene poi diviso in training set e validation set:
+Ogni coppia è caricata e concatenata, per formare il training set della sessione che viene poi diviso in training set e validation set:
 \lstinputlisting[style=myPython, firstnumber=68, firstline=68, lastline=71]{code/wesad_continualtrain.py}
 \lstinputlisting[style=myPython, firstnumber=73, firstline=73, lastline=74]{code/wesad_continualtrain.py}
 \lstinputlisting[style=myPython, firstnumber=83, firstline=83, lastline=83]{code/wesad_continualtrain.py}
 Infine il modello è addestrato sul training set e validato sul validation set appena prodotti, sono calcolate le metriche ed esposte in output.
 \subsection{Replay}  % una percentuale, di solito 25%
 Questa è la prima tecnica di replay provata, ed anche la più semplice. Questa metodologia consiste nel mantenere una percentuale del training set utilizzato per addestrare la rete neurale durante l'attuale sessione di addestramento e usarla insieme al training set, cioè alla coppia di soggetti, della sessione di addestramento successiva. Anche questa metodologia è di facile implementazione e la sua filosofia è trattata in studi come \cite{rolnick2019experience}.\\\\
-\pagebreak
-
 Subito prima di avviare l'addestramento, vengono inizializzate le due variabili che conterranno il training set:
 \lstinputlisting[style=myPython, firstnumber=65, firstline=65, lastline=65]{code/wesad_continualreplaytrain.py}
-Appena caricati i soggetti, viene costruito il training set anche mantenendo ciò che è stato trattenuto dalla sessione precedente, se presente:
+Appena caricati i soggetti, viene costruito il training set mantenendo ciò che è stato trattenuto dalla sessione precedente e memorizzato in \texttt{X}, se presente:
 \lstinputlisting[style=myPython, firstnumber=74, firstline=74, lastline=79]{code/wesad_continualreplaytrain.py}
 A fine sessione di addestramento, si trattiene la percentuale di replay (nell'esempio, il 25\%):
 \lstinputlisting[style=myPython, firstnumber=100, firstline=100, lastline=100]{code/wesad_continualreplaytrain.py}
 
 \subsection{Cumulative}  % si mantengono gli esempi precedenti nei successivi addestramenti, così all'arrivo dell'ultima coppia di soggetti il training set è uguale al caso offline
-Con questa metodologia, si intende mantenere di volta in volta l'intero training set accumulando le coppie di soggetti. Così facendo, all'arrivo dell'ultima coppia di soggetti si avrà un training set pari al training set usato nella metodologia offline, contenendo tutti i dati di tutti i precedenti soggetti, con la differenza che si addestra una rete neurale che è stata già addestrata su tutte le coppie presenti nel training set ad eccezione dell'ultima arrivata. Questa metodologia può essere considerata una versione particolare della metodoglia di replay precedente: abbiamo un replay del 100\% dei dati, così che tra una sessione di addestramento e l'altra si mantiene l'intero training set utilizzato.\\\\
-Viene realizzato nel seguente modo: la prima sessione di addestramento è realizzata sulla prima coppia di soggetti partendo da pesi casuali della rete neurale, mentre mano a mano che arrivano le coppie successive esse vengono concatenate al training set della sessione precedente e la rete è addestrata senza reinizializzare i pesi, cioè mantenendo l'addestramento precedente. Una problematica da tenere in considerazione è la memoria necessaria richiesta per mantenere i training set nella loro totalità: durante l'ultima sessione di addestramento avremo un training set corrispondente al training set usato nella metodologia offline, di conseguenza mantenere in memoria tutti i dati necessari potrebbe non essere praticabile in contesti reali.
+Con questa metodologia, si intende mantenere di volta in volta l'intero training set accumulando le coppie di soggetti che diventano disponibili. Così facendo, all'arrivo dell'ultima coppia di soggetti si avrà un training set pari al training set usato nella metodologia offline, contenendo tutti i dati di tutti i precedenti soggetti, con la differenza che si addestra una rete neurale che è stata già addestrata su tutte le coppie presenti nel training set ad eccezione dell'ultima arrivata. Questa metodologia può essere considerata una versione particolare della metodologia di replay precedente: abbiamo un replay del 100\% dei dati, così che tra una sessione di addestramento e l'altra si mantiene l'intero training set utilizzato.\\\\
+Viene realizzato nel seguente modo: la prima sessione di addestramento è realizzata sulla prima coppia di soggetti partendo dalla rete neurale inizializzata con i pesi casuali, mentre mano a mano che arrivano le coppie successive esse vengono concatenate al training set della sessione precedente e la rete è addestrata senza reinizializzare i pesi, cioè mantenendo l'addestramento precedente. Una problematica da tenere in considerazione è la memoria necessaria richiesta per mantenere i training set nella loro totalità: durante l'ultima sessione di addestramento avremo un training set corrispondente al training set usato nella metodologia offline, di conseguenza mantenere in memoria tutti i dati necessari potrebbe non essere praticabile in contesti reali.
 \subsection{Episodic}  % si mantengono di volta in volta m esempi per ogni classe tratti dal training set
 Nelle precedenti tecniche di replay si mantenevano tutti i dati o un sottoinsieme scelto casualmente del training set. Con questa tecnica, invece, viene mantenuto di sessione in sessione un numero fisso $m$ di esempi per ogni etichetta, così da avere un replay bilanciato rispetto alle classi. L'idea dietro questa tecnica di replay è descritta nello studio "Gradient Episodic Memory for Continuum Learning"$^{\cite{DBLP:journals/corr/Lopez-PazR17}}$.\\\\
 Subito prima di avviare l'addestramento, vengono inizializzate le "memorie episodiche" e il parametro $m$, che indica quanti esempi per classe mantenere (nell'esempio, $m = 70$):
@@ -229,10 +225,9 @@ La nuova loss è quindi
 \end{equation}
 Dove $\lambda_o$ è un peso che è tanto più grande quanto più sono importanti i vecchi dati rispetto ai nuovi, e $R$ è una funzione di regolarizzazione dei parametri.\\\\
 Questa metodologia, che tiene di conto della performance che il modello aveva fino all'arrivo dei nuovi dati, tende quindi a mantenere la rete neurale simile a quella già addestrata, evitando così di variare considerevolmente i pesi distanziandoli da quelli appresi sui dati precedenti.
-
 \section{Conclusione}
-La scelta delle metodologie adottate, elemento centrale di questo progetto, si è rivelata particolarmente laboriosa. Anzitutto si è reso necessario inquadrare precisamente lo scopo del lavoro, cioè la comparazione fra diverse tecniche di continual learning applicate a dati relativi allo human state monitoring. Questo ha richiesto la selezione di dataset appropriati e in seguito la scelta di semplici metodologie di continual learning che potessero essere comparati. La comparazione ha quindi richiesto la ricerca e la scelta di metriche che ne misurassero i diversi aspetti di trasferimento della conoscenza e dell'accuratezza media e finale, oltre che i tempi di addestramento e la memoria utilizzata.\\
-Il tutto è stato preceduto dalla ricerca e dallo studio personale dell'argomento, oltre che dalla scelta del linguaggio e delle librerie di sviluppo. Questo ha portato ad una lunga serie di esperimenti esplorativi, per poter studiare e testare i vari aspetti del machine learning e delle reti neurali prima, e del continual learning successivamente. Questi esperimenti hanno permesso di affrontare le diverse problematiche comuni ad un problema di machine learning: il preprocessing dei dati, l'individuazione degli iperparametri adatti ad un modello, la corretta progettazione di una rete neurale, i tempi di addestramento e altri ancora.\\\\
+La scelta delle metodologie adottate, elemento centrale di questa tesi, si è rivelata particolarmente laboriosa. Anzitutto si è reso necessario inquadrare precisamente lo scopo del lavoro, cioè la comparazione fra diverse tecniche di addestramento continuo applicate a dati relativi allo human state monitoring. Questo ha richiesto la selezione di dataset appropriati e in seguito la scelta di semplici metodologie di addestramento continuo che potessero essere comparate. Il confronto ha quindi richiesto la ricerca e la scelta di metriche che ne misurassero i diversi aspetti di trasferimento della conoscenza e dell'accuratezza media e finale, oltre che i tempi di addestramento e la memoria utilizzata.\\
+Il tutto è stato preceduto dalla ricerca e dallo studio personale dell'argomento, oltre che dalla scelta del linguaggio, delle librerie e dell'ambiente di sviluppo. Questo ha portato ad una lunga serie di esperimenti esplorativi, per poter studiare e testare i vari aspetti del machine learning e delle reti neurali prima, e dell'addestramento continuo successivamente. Questi esperimenti hanno permesso di affrontare le diverse problematiche comuni ad un problema di machine learning: il preprocessing dei dati, l'individuazione degli iperparametri adatti ad un modello, la corretta progettazione di una rete neurale, i tempi di addestramento e altri ancora.\\\\
 Tutto questo lavoro è confluito in una serie di esperimenti finali che hanno prodotto i risultati presentati nel prossimo capitolo.
 
 % Aggiungere queste parti? \/
