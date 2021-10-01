@@ -1,11 +1,11 @@
 \chapter{Metodologie}
-In questo capitolo verranno delineate nel dettaglio le varie metodologie scelte per la realizzazione della comparazione fra alcune strategie di addestramento continuo triviali applicate ai dataset di Human State Monitoring presentati nel precedente capitolo.
-
+In questo capitolo verranno delineate nel dettaglio le varie metodologie scelte per la realizzazione della comparazione fra alcune strategie di addestramento continuo triviali applicate ai dataset di Human State Monitoring presentati nel precedente capitolo.\\\\
+In particolare, nella sezione 3.1 vengono delineate nel dettaglio le metriche prese in considerazione per comparare le metodologie scelte, nella sezione 3.2 viene presentata la metodologia di addestramento utilizzata come base di confronto e infine, nella sezione 3.3, vengono descritte nel dettaglio le metodologie di addestramento continuo selezionate nell'ambito di questa tesi.
 \section{Metriche}
 Per poter confrontare fra loro le diverse strategie, fin da subito è apparsa chiara la necessità di metriche che misurassero con precisione alcune caratteristiche fondamentali delle metodologie di addestramento continuo, in particolare: l'accuratezza sul test set, l'accuratezza media sulle classi e i \textit{forward} e \textit{backward transfer} per poter misurare l'impatto della nuova conoscenza sulla conoscenza precedentemente appresa e su quella ancora da acquisire.
 \subsection{Accuratezza}
-Con "accuratezza" si intende la misura della percentuale di previsioni corrette che il modello di machine learning ottiene su un test set, cioè un insieme di dati a cui il modello non è stato esposto durante le sessioni di addestramento.\\
-Per poter misurare l'accuratezza su un insieme di dati, l'API di TensorFlow mette a disposizione un comando che valuta un modello di machine learning applicato ai dati passati come parametro:
+Con "accuratezza" si intende la misura della percentuale di previsioni corrette che il modello di Machine Learning ottiene su un test set, cioè un insieme di dati a cui il modello non è stato esposto durante le sessioni di addestramento.\\
+Per poter misurare l'accuratezza su un insieme di dati, l'API di TensorFlow mette a disposizione un comando che valuta un modello di Machine Learning applicato ai dati passati come parametro:
 \begin{lstlisting}[style = myPython]
 model.evaluate(Xtest, ytest)
 \end{lstlisting}
@@ -56,7 +56,7 @@ Le altre metriche raccolte durante gli esperimenti sono le seguenti:
 \end{itemize}
 
 \section{Baseline: l'addestramento offline}
-L'approccio classico all'addestramento di un modello di machine learning avviene raccogliendo i dati di addestramento e sottoponendoli al modello in una singola sessione di addestramento. Questa metodologia è statica e produce un modello che sui futuri dati si comporterà tanto meglio quanto essi saranno simili ai dati di addestramento.\\
+L'approccio classico all'addestramento di un modello di Machine Learning avviene raccogliendo i dati di addestramento e sottoponendoli al modello in una singola sessione di addestramento. Questa metodologia è statica e produce un modello che sui futuri dati si comporterà tanto meglio quanto essi saranno simili ai dati di addestramento.\\
 La scelta di usare questa metodologia classica come baseline è stata guidata dal principio che, avendo tutti i dati a disposizione in una sola volta, la rete neurale risultante dovrebbe ottenere le migliori prestazioni possibili sul test set una volta che questo viene sottoposto, e quindi fornisce un "limite superiore" all'accuratezza delle metodologie continue. Una strategia di addestramento continuo è tanto migliore quanto più si avvicina alle performance che la stessa rete neurale otterrebbe se venisse addestrata su tutti i dati in maniera offline o, se possibile, quando la supera.\\\\
 L'addestramento offline è quindi realizzato seguendo il seguente pseudo-algoritmo, applicabile sia a WESAD che ad ASCERTAIN:
 \begin{enumerate}
@@ -227,7 +227,7 @@ Dove $\lambda_o$ è un peso che è tanto più grande quanto più sono importanti
 Questa metodologia, che tiene di conto della performance che il modello aveva fino all'arrivo dei nuovi dati, tende quindi a mantenere la rete neurale simile a quella già addestrata, evitando così di variare considerevolmente i pesi distanziandoli da quelli appresi sui dati precedenti.
 \section{Conclusione}
 La scelta delle metodologie adottate, elemento centrale di questa tesi, si è rivelata particolarmente laboriosa. Anzitutto si è reso necessario inquadrare precisamente lo scopo del lavoro, cioè la comparazione fra diverse tecniche di addestramento continuo applicate a dati relativi allo human state monitoring. Questo ha richiesto la selezione di dataset appropriati e in seguito la scelta di semplici metodologie di addestramento continuo che potessero essere comparate. Il confronto ha quindi richiesto la ricerca e la scelta di metriche che ne misurassero i diversi aspetti di trasferimento della conoscenza e dell'accuratezza media e finale, oltre che i tempi di addestramento e la memoria utilizzata.\\
-Il tutto è stato preceduto dalla ricerca e dallo studio personale dell'argomento, oltre che dalla scelta del linguaggio, delle librerie e dell'ambiente di sviluppo. Questo ha portato ad una lunga serie di esperimenti esplorativi, per poter studiare e testare i vari aspetti del machine learning e delle reti neurali prima, e dell'addestramento continuo successivamente. Questi esperimenti hanno permesso di affrontare le diverse problematiche comuni ad un problema di machine learning: il preprocessing dei dati, l'individuazione degli iperparametri adatti ad un modello, la corretta progettazione di una rete neurale, i tempi di addestramento e altri ancora.\\\\
+Il tutto è stato preceduto dalla ricerca e dallo studio personale dell'argomento, oltre che dalla scelta del linguaggio, delle librerie e dell'ambiente di sviluppo. Questo ha portato ad una lunga serie di esperimenti esplorativi, per poter studiare e testare i vari aspetti del Machine Learning e delle reti neurali prima, e dell'addestramento continuo successivamente. Questi esperimenti hanno permesso di affrontare le diverse problematiche comuni ad un problema di Machine Learning: il preprocessing dei dati, l'individuazione degli iperparametri adatti ad un modello, la corretta progettazione di una rete neurale, i tempi di addestramento e altri ancora.\\\\
 Tutto questo lavoro è confluito in una serie di esperimenti finali che hanno prodotto i risultati presentati nel prossimo capitolo.
 
 % Aggiungere queste parti? \/

@@ -1,9 +1,11 @@
 \chapter{Dataset}
-Ai fini del progetto, il primo elemento necessario per poter valutare correttamente la sinergia continual learning -- Human State Monitoring sono dei dati raccolti riguardanti quest'ultimo. I dati dovrebbero provenire da più soggetti, per correttezza statistica, e riguardare diversi aspetti biometrici della persona: battito cardiaco, sudorazione, respirazione\ldots\\\\
-I dataset selezionati ai fini di questa comparazione sono due, che seguono.
+Ai fini della tesi, il primo passo necessario per poter valutare correttamente la sinergia apprendimento continuo -- Human State Monitoring è ottenere raccolte di dati riguardanti quest'ultimo. I dati dovrebbero provenire da più soggetti, per correttezza statistica, e riguardare diversi aspetti biometrici della persona: battito cardiaco, sudorazione, respirazione, ecc.\\\\
+I dataset selezionati ai fini di questa comparazione sono due, presentati nel dettaglio di seguito. In particolare, nella sezione 2.1 viene introdotto il dataset WESAD e il preprocessing eseguito nella sezione 2.1.1, mentre nella sezione 2.2 introduciamo il dataset ASCERTAIN, con il preprocessing dettagliato all'interno della sezione 2.2.1. Infine, nella sezione 2.3, vengono presentate le principali differenze fra i due dataset precedentemente descritti.
 \section{WESAD}
 Il dataset WESAD$^{\cite{10.1145/3242969.3242985}}$, acronimo di \textit{WEarable Stress and Affect Detection}, contiene dati raccolti da 15 soggetti durante uno studio effettuato in laboratorio riguardante i livelli di stress misurati tramite sensori biometrici e di movimento indossabili. Il dataset classifica questi dati in tre scale: neutralità, stress e divertimento.\\
-I dispositivi usati per la raccolta dei dati sono due: uno indossato sul petto (RespiBAN) e uno indossato sul polso (Empatica E4).\\\\Il RespiBAN, indossato sul petto, raccoglie dati campionati a 700 Hz su:
+I dispositivi usati per la raccolta dei dati sono due: uno indossato sul petto (RespiBAN) e uno indossato sul polso (Empatica E4).\\\\
+\pagebreak
+Il RespiBAN, indossato sul petto, raccoglie dati campionati a 700 Hz su:
 \begin{itemize}
     \item[-] Elettrocardiogramma (ECG)
     \item[-] Attività elettrodermica (EDA)
@@ -19,7 +21,7 @@ L'Empatica E4, indossato sul polso, monitora con frequenza di campionamento eter
     \item[-] Temperatura corporea, a 4 Hz
     \item[-] Accelerazione sui tre assi, a 32 Hz
 \end{itemize}
-La quantità di dati contenuti in questo dataset lo rende un ottimo strumento nell'addestramento di modelli di machine learning riguardanti l'ambiente dello HSM. Dati come le pulsazioni, la temperatura e l'elettrocardiogramma sono precisissimi indicatori biometrici dello stato psico-fisico di una persona e pertanto sono estremamente utili alle reti neurali per dedurre lo stato psico-fisico di soggetto.
+La quantità di dati contenuti in questo dataset lo rende un ottimo strumento nell'addestramento di modelli di Machine Learning riguardanti l'ambiente dello HSM. Dati come le pulsazioni, la temperatura e l'elettrocardiogramma sono precisissimi indicatori biometrici dello stato psico-fisico di una persona e pertanto sono estremamente utili alle reti neurali per dedurre lo stato psico-fisico di soggetto.
 \subsection{Preprocessing}
 Una volta caricato il dataset, i dati sono stati concatenati e ricampionati a 32 Hz, attraverso la libreria \texttt{SciPy}.
 \lstinputlisting[style=myPython, firstnumber=31, firstline=31, lastline=42]{code/wesad_data.py}
@@ -52,9 +54,10 @@ I dati sono poi ripuliti dai valori mancanti, ricampionati a 32 Hz e concatenati
 Vengono poi costruite le sottosequenze, da 160 elementi ciascuna (5 secondi), mantenendo un bilanciamento fra le diverse classi.
 \lstinputlisting[style=myPython, firstnumber=80, firstline=80, lastline=80]{code/ascertain_data2.py}
 \lstinputlisting[style=myPython, firstnumber=82, firstline=82, lastline=104]{code/ascertain_data2.py}
-Come per WESAD, anche da ASCERTAIN viene estratto un test set, il che ci lascia con un test set da 720 elementi e un training set da 2160 elementi suddivisi come indicato nella tabella \ref{tab:splittedascertain}
+Analogamente a WESAD, anche da ASCERTAIN viene estratto un test set. A preprocessing ultimato, il dataset è suddiviso in un test set da 720 elementi e un training set da 2160 elementi suddivisi come indicato nella Tabella \ref{tab:splittedascertain}
 
 \begin{table}[h]
+\small
     \parbox{.45\linewidth}{
     	\begin{center}
     		\begin{tabular}{l|c}
@@ -76,7 +79,9 @@ Come per WESAD, anche da ASCERTAIN viene estratto un test set, il che ci lascia 
     		     S16 & 313 \\
     		     S17 & 301 \\
     		     \hline
-    		     Totale & 4500
+    		     Totale & 4500\\
+    		     \multicolumn{1}{c}{}\\
+    		     \multicolumn{1}{c}{}
     		\end{tabular}
     		\caption{Datataset WESAD}
     		\label{tab:splittedwesad}
@@ -112,10 +117,10 @@ Come per WESAD, anche da ASCERTAIN viene estratto un test set, il che ci lascia 
     	\end{center}
     }
 \end{table}
+\pagebreak
 \section{Differenze fra i due dataset}
 Uno degli elementi da considerare quando si addestra una rete neurale è il bilanciamento dei dati presi in considerazione per l'addestramento.\\
-Andando ad analizzare nel dettaglio la struttura dei due dataset considerati, diventa evidente la decisa sovrarappresentanza della classe 0 nel dataset ASCERTAIN, mentre le classi nel dataset WESAD risultano molto più bilanciate. Questo è anche dovuto all'aver scelto delle classi fittizie, per quanto riguarda ASCERTAIN, che ha evidenziato come non tutti i soggetti abbiano prodotto dati bilanciati rispetto alle nuove classi selezionate. Anche eseguendo un bilanciamento successivo, ovvero eliminando gli esempi in eccesso sulla prima classe, si raggiungono misurazioni analoghe a quelle presentate.
-
+Andando ad analizzare nel dettaglio la struttura dei due dataset considerati, diventa evidente la decisa sovrarappresentanza della classe 0 nel dataset ASCERTAIN (Figura \ref{fig:ascertainclasses}), mentre le classi nel dataset WESAD risultano molto più bilanciate (Figura \ref{fig:wesadclasses}). Questo è anche dovuto all'aver scelto delle classi fittizie, per quanto riguarda ASCERTAIN, che ha evidenziato come non tutti i soggetti abbiano prodotto dati bilanciati rispetto alle nuove classi selezionate. Anche eseguendo un bilanciamento successivo, ovvero eliminando gli esempi in eccesso sulla prima classe, si raggiungono misurazioni analoghe a quelle presentate.\\\\
 Bilanciando il dataset ASCERTAIN attraverso la produzione di soggetti fittizi, ognuno contenente dati presi da tutti i soggetti in maniera bilanciata rispetto alle nuove classi, otteniamo immediatamente risultati sensibilmente migliori, con accuratezze a volte anche doppie rispetto allo stesso metodologia sul dataset ASCERTAIN originale. Questo rende evidente l'importanza dell'avere dati di addestramento bilanciati, quindi esempi in quantità simile per ognuna delle etichette possibili.
 \begin{figure}[h]
     \begin{minipage}[b]{0.5\textwidth}
@@ -130,6 +135,3 @@ Bilanciando il dataset ASCERTAIN attraverso la produzione di soggetti fittizi, o
 		\label{fig:ascertainclasses}
 	\end{minipage}
 \end{figure}
-% aggiungere queste parti? \/
-% presi in considerazione diversi (WESAD, HHAR (\cite{10.1145/2809695.2809718}) per attività fisiche, PAMAP2 (\cite{6246152}) per dati cuore e movimento, OPPORTUNITY (\cite{5573462}) per movimenti del corpo, ASCERTAIN)
-% WESAD e ASCERTAIN scelti principalmente per i dati biometrici contenuti, ASCERTAIN (\cite{10.1145/2818346.2820736}) in particolare dati facciali utili in contesti reali dove non è sempre possibile attaccare sensori all'utente, mentre WESAD concentrato principalmente sullo stress quindi utile in altri contesti
