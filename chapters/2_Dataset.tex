@@ -1,10 +1,11 @@
 \chapter{Dataset}
-Ai fini della tesi, il primo passo necessario per poter valutare correttamente la sinergia apprendimento continuo -- Human State Monitoring è ottenere raccolte di dati riguardanti quest'ultimo. I dati dovrebbero provenire da più soggetti, per correttezza statistica, e riguardare diversi aspetti biometrici della persona: battito cardiaco, sudorazione, respirazione, ecc.\\\\
+Ai fini della tesi, il primo passo necessario per poter valutare correttamente la sinergia Apprendimento Continuo -- Human State Monitoring è ottenere raccolte di dati riguardanti quest'ultimo. I dati dovrebbero provenire da più soggetti, per correttezza statistica, e riguardare diversi aspetti biometrici della persona: battito cardiaco, sudorazione, respirazione, ecc.\\\\
 I dataset selezionati ai fini di questa comparazione sono due, presentati nel dettaglio di seguito. In particolare, nella sezione 2.1 viene introdotto il dataset WESAD e il preprocessing eseguito nella sezione 2.1.1, mentre nella sezione 2.2 introduciamo il dataset ASCERTAIN, con il preprocessing dettagliato all'interno della sezione 2.2.1. Infine, nella sezione 2.3, vengono presentate le principali differenze fra i due dataset precedentemente descritti.
 \section{WESAD}
 Il dataset WESAD$^{\cite{10.1145/3242969.3242985}}$, acronimo di \textit{WEarable Stress and Affect Detection}, contiene dati raccolti da 15 soggetti durante uno studio effettuato in laboratorio riguardante i livelli di stress misurati tramite sensori biometrici e di movimento indossabili. Il dataset classifica questi dati in tre scale: neutralità, stress e divertimento.\\
 I dispositivi usati per la raccolta dei dati sono due: uno indossato sul petto (RespiBAN) e uno indossato sul polso (Empatica E4).\\\\
 \pagebreak
+
 Il RespiBAN, indossato sul petto, raccoglie dati campionati a 700 Hz su:
 \begin{itemize}
     \item[-] Elettrocardiogramma (ECG)
@@ -37,7 +38,7 @@ Dai dati viene poi estratto un test set. Questo ci lascia con un test set di 150
 
 \section{ASCERTAIN}
 ASCERTAIN$^{\cite{10.1145/2818346.2820736}}$, acronimo di \textit{multimodal databASe for impliCit pERsonaliTy and Affect recognitIoN}, è un dataset contenente dati provenienti da 58 soggetti raccolti con sensori fisiologici commerciali e classifica le informazioni su diverse scale: incitamento, valenza, investimento, apprezzamento e familiarità. Il dataset contiene anche dati relativi all'attività facciale dei soggetti registrati con sensori comuni, oltre ai dati sull'elettroencefalogramma (EEG), elettrocardiogramma (ECG) e sulle risposte galvaniche della pelle (GSR).\\\\
-ASCERTAIN è un dataset contenente molti più dati rispetto a WESAD, raccolti con dispositivi commerciali comuni, il che rende questa raccolta di dati molto utile per poter valutare l'applicazione di metodologie di apprendimento continuo. Usando dispositivi commerciali si può simulare un contesto più vicino all'ambiente di produzione che ad un esperimento controllato in laboratorio.
+ASCERTAIN è un dataset contenente molti più dati rispetto a WESAD, raccolti con dispositivi commerciali comuni, il che rende questa raccolta di dati molto utile per poter valutare l'applicazione di metodologie di Apprendimento Continuo. Usando dispositivi commerciali si può simulare un contesto più vicino all'ambiente di produzione che ad un esperimento controllato in laboratorio.
 \subsection{Preprocessing}
 Dal dataset sono stati esclusi due soggetti poiché i loro dati risultavano imprecisi o incompleti. Ogni soggetto rimanente è stato caricato e per ognuno sono state create le etichette seguendo la seguente suddivisione basata sui valori di incitamento e valenza specificati, che corrispondono ai quadranti del grafico cartesiano creato dai due valori:
 \begin{itemize}
@@ -117,7 +118,6 @@ Analogamente a WESAD, anche da ASCERTAIN viene estratto un test set. A preproces
     	\end{center}
     }
 \end{table}
-\pagebreak
 \section{Differenze fra i due dataset}
 Uno degli elementi da considerare quando si addestra una rete neurale è il bilanciamento dei dati presi in considerazione per l'addestramento.\\
 Andando ad analizzare nel dettaglio la struttura dei due dataset considerati, diventa evidente la decisa sovrarappresentanza della classe 0 nel dataset ASCERTAIN (Figura \ref{fig:ascertainclasses}), mentre le classi nel dataset WESAD risultano molto più bilanciate (Figura \ref{fig:wesadclasses}). Questo è anche dovuto all'aver scelto delle classi fittizie, per quanto riguarda ASCERTAIN, che ha evidenziato come non tutti i soggetti abbiano prodotto dati bilanciati rispetto alle nuove classi selezionate. Anche eseguendo un bilanciamento successivo, ovvero eliminando gli esempi in eccesso sulla prima classe, si raggiungono misurazioni analoghe a quelle presentate.\\\\
