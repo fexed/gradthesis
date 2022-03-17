@@ -12,14 +12,14 @@ import matplotlib.pyplot as plt
 def get_run_logdir(label=""):
     import time
     run_id = time.strftime("continual_wesad_%Y%m%d_%H%M%S")
-    return os.path.join("/home/fexed/ML/tensorboard_logs", run_id + "_" + label)
+    return os.path.join("tensorboard_logs", run_id + "_" + label)
 
 
 print(os.getpid())
 input("Press Enter to continue...")
 print("Opening test set")
-Xts = pickle.load(open("/home/fexed/ML/datasets/WESAD/splitted/Xts.pkl", 'rb'), encoding='latin1')
-yts = pickle.load(open("/home/fexed/ML/datasets/WESAD/splitted/yts.pkl", 'rb'), encoding='latin1')
+Xts = pickle.load(open("datasets/WESAD/splitted/Xts.pkl", 'rb'), encoding='latin1')
+yts = pickle.load(open("datasets/WESAD/splitted/yts.pkl", 'rb'), encoding='latin1')
 print("Creating test set per task")
 Xts_1, Xts_2, Xts_3, Xts_4, yts_1, yts_2, yts_3, yts_4 = [], [], [], [], [], [], [], []
 idx_1 = [i for i, x in enumerate(yts) if x[0] == 1]
@@ -66,10 +66,10 @@ X, y = None, None
 
 for S in [("S2", "S3"), ("S4", "S5"), ("S6", "S7"), ("S8", "S9"), ("S10", "S11"), ("S13", "S14"), ("S15", "S16")]:
     print("Subjects " + S[0] + " and " + S[1])
-    Xa = pickle.load(open("/home/fexed/ML/datasets/WESAD/splitted/X" + S[0] + "_disarli.pkl", 'rb'), encoding='latin1')
-    ya = pickle.load(open("/home/fexed/ML/datasets/WESAD/splitted/y" + S[0] + "_disarli.pkl", 'rb'), encoding='latin1')
-    Xb = pickle.load(open("/home/fexed/ML/datasets/WESAD/splitted/X" + S[1] + "_disarli.pkl", 'rb'), encoding='latin1')
-    yb = pickle.load(open("/home/fexed/ML/datasets/WESAD/splitted/y" + S[1] + "_disarli.pkl", 'rb'), encoding='latin1')
+    Xa = pickle.load(open("datasets/WESAD/splitted/X" + S[0] + ".pkl", 'rb'), encoding='latin1')
+    ya = pickle.load(open("datasets/WESAD/splitted/y" + S[0] + ".pkl", 'rb'), encoding='latin1')
+    Xb = pickle.load(open("datasets/WESAD/splitted/X" + S[1] + ".pkl", 'rb'), encoding='latin1')
+    yb = pickle.load(open("datasets/WESAD/splitted/y" + S[1] + ".pkl", 'rb'), encoding='latin1')
 
     if (X is None):
         X = np.concatenate([Xa, Xb], axis = 0)
@@ -88,7 +88,7 @@ for S in [("S2", "S3"), ("S4", "S5"), ("S6", "S7"), ("S8", "S9"), ("S10", "S11")
     es = tf.keras.callbacks.EarlyStopping(monitor = 'val_loss', mode = 'min', patience = 10, verbose = 1, restore_best_weights = True)
     tb = tf.keras.callbacks.TensorBoard(log_dir=logdir, write_graph=True)
     start = time.time()
-    graph = model.fit(Xtr, ytr, epochs = 100, validation_data = (Xvl, yvl), callbacks = [es, tb], batch_size=256, use_multiprocessing=True, workers=8)
+    graph = model.fit(Xtr, ytr, epochs = 100, validation_data = (Xvl, yvl), callbacks = [es, tb], batch_size = 32)
     end = time.time()
     modeltime += (end - start)
     history = model.history.history['val_loss']
@@ -131,4 +131,4 @@ print('BWT\t', np.around(BWT, 4))
 print('FWT\t', np.around(FWT, 4))
 #plt.plot(scores)
 #plt.savefig("accuracy_continual.png")
-#model.save("/home/fexed/ML/models/replaymodel")
+#model.save("models/replaymodel")

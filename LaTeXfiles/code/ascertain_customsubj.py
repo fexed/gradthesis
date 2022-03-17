@@ -20,17 +20,17 @@ for i in range(37, 56):
         # Caricamento dati
         clips_ECG = {}
         for j in range(1, 37):
-          clips_ECG[('n_' + str(j))] = scipy.io.loadmat('/home/fexed/ML/datasets/ASCERTAIN/ECGData/Movie_P' + str(i) + '/ECG_Clip' + str(j))['Data_ECG'][:,1:]
+          clips_ECG[('n_' + str(j))] = scipy.io.loadmat('ECGData/Movie_P' + str(i) + '/ECG_Clip' + str(j))['Data_ECG'][:,1:]
         ds_ECG[('S' + str(i))] = clips_ECG
-        arousal.append(scipy.io.loadmat('/home/fexed/ML/datasets/ASCERTAIN/Dt_SelfReports.mat')['Ratings'][0][i])
-        valence.append(scipy.io.loadmat('/home/fexed/ML/datasets/ASCERTAIN/Dt_SelfReports.mat')['Ratings'][1][i])
+        arousal.append(scipy.io.loadmat('Dt_SelfReports.mat')['Ratings'][0][i])
+        valence.append(scipy.io.loadmat('Dt_SelfReports.mat')['Ratings'][1][i])
         clips_EEG = {}
         for j in range(1, 37):
-          clips_EEG[('n_' + str(j))] = np.transpose(scipy.io.loadmat('/home/fexed/ML/datasets/ASCERTAIN/EEGData/Movie_P' + str(i) + '/EEG_Clip' + str(j))['ThisEEG'][:,1:])
+          clips_EEG[('n_' + str(j))] = np.transpose(scipy.io.loadmat('EEGData/Movie_P' + str(i) + '/EEG_Clip' + str(j))['ThisEEG'][:,1:])
         ds_EEG[('S' + str(i))] = clips_EEG
         clips_GSR = {}
         for j in range(1, 37):
-          clips_GSR[('n_' + str(j))] = scipy.io.loadmat('/home/fexed/ML/datasets/ASCERTAIN/GSRData/Movie_P' + str(i) + '/GSR_Clip' + str(j))['Data_GSR'][:,1:]
+          clips_GSR[('n_' + str(j))] = scipy.io.loadmat('GSRData/Movie_P' + str(i) + '/GSR_Clip' + str(j))['Data_GSR'][:,1:]
         ds_GSR[('S' + str(i))] = clips_GSR
 print("Subjects loaded")
 
@@ -120,9 +120,9 @@ y_ASC = tf.keras.utils.to_categorical(Y, num_classes = 4)
 # Divisione in training set e in test set
 Xtr, Xts, ytr, yts = train_test_split(X_ASC, y_ASC, test_size = 0.25, train_size = 0.75, random_state=42)
 
-with open("/home/fexed/ML/datasets/ASCERTAIN/splitted/Xts.pkl", 'wb') as handle:
+with open("splitted/Xts.pkl", 'wb') as handle:
     pickle.dump(Xts, handle, protocol=pickle.HIGHEST_PROTOCOL)
-with open("/home/fexed/ML/datasets/ASCERTAIN/splitted/yts.pkl", 'wb') as handle:
+with open("splitted/yts.pkl", 'wb') as handle:
     pickle.dump(yts, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # Creazione dei soggetti fittizi a partire dal training set
@@ -134,7 +134,7 @@ for S in ["S0", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S1
     print("Shape of y:", ys.shape)
     n += 1
 
-    with open("/home/fexed/ML/datasets/ASCERTAIN/splitted/X" + S + ".pkl", 'wb') as handle:
+    with open("splitted/X" + S + ".pkl", 'wb') as handle:
         pickle.dump(Xs, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    with open("/home/fexed/ML/datasets/ASCERTAIN/splitted/y" + S + ".pkl", 'wb') as handle:
+    with open("splitted/y" + S + ".pkl", 'wb') as handle:
         pickle.dump(ys, handle, protocol=pickle.HIGHEST_PROTOCOL)
